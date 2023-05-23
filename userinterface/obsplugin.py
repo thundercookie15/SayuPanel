@@ -6,28 +6,30 @@ def start_connection():
     return ObsSocket()
 
 
-def image_input_settings(twitch_name):
-    return {
-        'css': 'body { background-color: rgba(0, 0, 0, 0); margin: 0px auto; overflow: hidden; }',
-        'fps_custom': True,
-        'fps': 30,
-        'url': f'http://:8081/?channel={twitch_name}&type=bar&timeout=60&requiredPings=3',
-        'width': 500,
-        'height': 100,
-    }
-
-
 class ObsSocket:
+
     def __init__(self):
-        self.client = obsws(host='localhost', port=4455)
+        from userinterface.main import OBS_WEBSERVER, OBS_HOST, OBS_PORT
+        self.client = obsws(host=OBS_HOST, port=OBS_PORT)
         self.scene = None
         self.image_source_name = "Chat_Picks_Image"
         self.poll_source_name = "Chat_Picks_Poll"
         self.finished_source_name = "Chat_Picks_Setup_Finished"
-        self.poll_status_url = "http://:5000/status"
-        self.activate_poll_url = "http://:5000/setactive"
-        self.deactivate_poll_url = "http://:5000/inactive"
+        self.poll_status_url = f'http://{OBS_WEBSERVER}:5000/status'
+        self.activate_poll_url = f'http://{OBS_WEBSERVER}:5000/setactive'
+        self.deactivate_poll_url = f'http://{OBS_WEBSERVER}:5000/inactive'
         self.client.connect()
+
+    def image_input_settings(self, twitch_name):
+        from userinterface.main import OBS_WEBSERVER
+        return {
+            'css': 'body { background-color: rgba(0, 0, 0, 0); margin: 0px auto; overflow: hidden; }',
+            'fps_custom': True,
+            'fps': 30,
+            'url': f'http://{OBS_WEBSERVER}:8081/?channel={twitch_name}&type=bar&timeout=60&requiredPings=3',
+            'width': 500,
+            'height': 100,
+        }
 
     def setup_obs(self, scene_name, twitch_name):
         print('Setting up OBS')
@@ -36,7 +38,7 @@ class ObsSocket:
             requests.CreateInput(sceneName=scene_name, inputName=self.image_source_name, inputKind='image_source'))
         self.client.call(
             requests.CreateInput(sceneName=scene_name, inputName=self.poll_source_name, inputKind='browser_source',
-                                 inputSettings=image_input_settings(twitch_name)))
+                                 inputSettings=self.image_input_settings(twitch_name)))
         finished_id = self.client.call(requests.CreateInput(sceneName=scene_name, inputName=self.finished_source_name,
                                                             inputKind='text_gdiplus_v2')).datain.get('sceneItemId')
         # Set the dummy text source to be the lowest possible and locks it

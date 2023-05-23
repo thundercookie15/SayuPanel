@@ -11,9 +11,10 @@ import PySimpleGUI as sg
 import pydirectinput
 from jsonschema import ValidationError
 
-from streamchatwars._shared.constants import RANDOM_ACTIONS_FILE, ACCEPT_INPUT_FILE
+from streamchatwars._shared.constants import RANDOM_ACTIONS_FILE, ACCEPT_INPUT_FILE, DEFAULT_CREDENTIAL_FILE
 from streamchatwars._shared.global_data import GlobalData
 from streamchatwars._shared.types import CredentialDict, TwitchChatCredentialDict, ConfigDict
+from streamchatwars.config import json_utils
 from streamchatwars.config.config import read_json_configs, IRC_Settings, extract_irc_settings
 from streamchatwars.config.json_utils import InvalidCredentialsError
 from streamchatwars.events.events_states import GlobalEventStates
@@ -233,9 +234,20 @@ def login_layout():
                     [sg.Text('Bot Username:', font=("Helvetica", 15)),
                      sg.InputText(key='bot_username', font=("Helvetica", 15), size=(20, 1))],
                     [sg.Text('Bot OAuth:', font=("Helvetica", 15)),
-                     sg.InputText(key='bot_oauth', font=("Helvetica", 15), size=(20, 1), password_char='*')],
+                     sg.InputText(key='bot_oauth', font=("Helvetica", 15), size=(30, 1), password_char='*')],
+                    [sg.Text('Twitch API Client ID: ', font=("Helvetica", 15)),
+                     sg.InputText(key='twitch_api_client_id', font=("Helvetica", 15), size=(30, 1))],
+                    [sg.Text('Twitch API Client Secret: ', font=("Helvetica", 15)),
+                     sg.InputText(key='twitch_api_client_secret', font=("Helvetica", 15), size=(30, 1),
+                                  password_char='*')],
+                    [sg.Text('OBS Websocket Host: ', font=("Helvetica", 15)),
+                     sg.InputText(key='obs_websocket_host', font=("Helvetica", 15), size=(30, 1))],
+                    [sg.Text('OBS Websocket Port: ', font=("Helvetica", 15)),
+                     sg.InputText(key='obs_websocket_port', font=("Helvetica", 15), size=(30, 1))],
+                    [sg.Text('OBS Poll Address: ', font=("Helvetica", 15)),
+                     sg.InputText(key='obs_poll_address', font=("Helvetica", 15), size=(20, 1))],
                     [sg.Button('Login', font="Helvetica", key='bot_login', button_color=('white', 'green'))],
-                ], vertical_alignment='center')]
+                ], vertical_alignment='center', element_justification='center')],
         ], justification='center', vertical_alignment='center')],
     ]
 
@@ -245,6 +257,18 @@ def remove_temp_files():
         os.remove(ACCEPT_INPUT_FILE)
     if os.path.exists(RANDOM_ACTIONS_FILE):
         os.remove(RANDOM_ACTIONS_FILE)
+
+
+OBS_HOST = ""
+OBS_PORT = None
+OBS_WEBSERVER = ""
+
+
+def set_values(host, port, webserver):
+    global OBS_HOST, OBS_PORT, OBS_WEBSERVER
+    OBS_HOST = host
+    OBS_PORT = port
+    OBS_WEBSERVER = webserver
 
 
 class GUI:
@@ -289,13 +313,14 @@ class GUI:
         self.layout_list = [[sg.Column(main_layout(), key=f'-COL_Main-'),
                              sg.Column(stream_chat_wars_layout(), visible=False, key=f'-COL_Stream_Chat_Wars-'),
                              sg.Column(chat_picks_layout(), visible=False, key=f'-COL_Chat_Picks-'),
-                             sg.Column(login_layout(), visible=False, key=f'-COL_Twitch_Login-')]]
+                             sg.Column(login_layout(), visible=False, key=f'-COL_Login-')]
+                            ]
 
     def __main__(self):
         self.window = sg.Window('Sayu Stream Extensions', self.layout_list, size=(800, 700), finalize=True)
 
         self.check_twitch_credentials()  # Check if twitch credentials are present
-        self.validate_credentials()  # Validate Twitch Credentials
+        # self.validate_credentials()  # Validate Twitch Credentials
 
         while True:
             event, values = self.window.read(timeout=1000)
@@ -328,8 +353,9 @@ class GUI:
                     self.status_panel_thread.start()
                     self.start_update_windows()
             elif event == 'bot_login':  # Twitch Login
-                username = values['bot_username']
-                oauth = values['bot_oauth']
+                print(self.check_login_values(values))
+                if self.check_login_values(values):
+                    self.set_new_credentials(values)
             elif event == 'start_webserver':
                 self.obs_hook = obsplugin.start_connection()
                 self.window['selected_scene'].update(values=self.obs_hook.get_obs_scenes(), value='none')
@@ -471,8 +497,10 @@ class GUI:
         try:
             self.config, self.credentials = read_json_configs(config_arg, credentials_arg)
             print("Twitch credentials file exists, checking credentials...")
+            self.validate_credentials()
         except (OSError, JSONDecodeError, ValidationError):
-            sg.popup("Invalid Twitch Chat credentials found. Go yell at thundercookie15 to send you new ones.")
+            self.update_current_layout('Login')
+            # sg.popup("Invalid Twitch Chat credentials found. Go yell at thundercookie15 to send you new ones.")
 
     def validate_credentials(self) -> None | bool:
         chat_credentials: TwitchChatCredentialDict | None
@@ -488,12 +516,55 @@ class GUI:
             irc_setting: IRC_Settings = extract_irc_settings(self.config, chat_credentials, self.channel_set)
             username = irc_setting.username
             oauth = irc_setting.oauth_token
+            host = self.credentials.get("OBS", {}).get("host").get("value")
+            port = self.credentials.get("OBS", {}).get("port").get("value")
+            webserver = self.credentials.get("OBS", {}).get("webserver").get("value")
+            set_values(host, port, webserver)
             print('Credentials validated...')
+            self.update_current_layout('Main')
             if username == "YOUR_BOT_USERNAME_LOWERCASE" or oauth == "YOUR_BOT_OAUTH_TOKEN":
                 raise InvalidCredentialsError
         except InvalidCredentialsError:
-            sg.popup("Invalid Twitch Chat credentials found. Go yell at thundercookie15 to send you new ones.")
+            # sg.popup("Invalid Twitch Chat credentials found. Go yell at thundercookie15 to send you new ones.")
+            self.update_current_layout('Login')
             return False
+
+    def check_login_values(self, values):
+        if values['bot_username'] == '':
+            return False
+        elif values['bot_oauth'] == '':
+            return False
+        elif values['twitch_api_client_id'] == '':
+            return False
+        elif values['twitch_api_client_secret'] == '':
+            return False
+        elif values['obs_websocket_host'] == '':
+            return False
+        elif values['obs_websocket_port'] == '':
+            return False
+        elif values['obs_poll_address'] == '':
+            return False
+        return True
+
+    def set_new_credentials(self, values):
+        username = values['bot_username']
+        oauth = values['bot_oauth']
+        client_id = values['twitch_api_client_id']
+        client_secret = values['twitch_api_client_secret']
+        obs_host = values['obs_websocket_host']
+        obs_port = values['obs_websocket_port']
+        obs_poll_address = values['obs_poll_address']
+        print(self.credentials.get("TwitchChat"))
+        self.credentials.get("TwitchChat").get("username").update({"value": username})
+        self.credentials.get("TwitchChat").get("oauth_token").update({"value": oauth})
+        self.credentials.get("TwitchAPI").get("client_id").update({"value": client_id})
+        self.credentials.get("TwitchAPI").get("client_secret").update({"value": client_secret})
+        self.credentials.get("OBS").get("host").update({"value": obs_host})
+        self.credentials.get("OBS").get("port").update({"value": obs_port})
+        self.credentials.get("OBS").get("webserver").update({"value": obs_poll_address})
+        print(self.credentials)
+        json_utils.write_credentials_file(self.credentials, DEFAULT_CREDENTIAL_FILE)
+        self.check_twitch_credentials()
 
     def update_status_panel(self):
         while True:

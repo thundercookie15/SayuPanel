@@ -373,6 +373,16 @@ class TwitchChatCredentialDict(TypedDict):
     '''OAUTH token used to authenticate your chat bot'''
 
 
+class OBSInformationDict(TypedDict):
+    '''JSON contents of JSON credential file: `/OBS/`'''
+    ip: Required[CredentialTypeDict]
+    '''IP address of the OBS server'''
+    port: Required[CredentialTypeDict]
+    '''Port of the OBS server'''
+    webserver: Required[CredentialTypeDict]
+    '''IP of the Poll webserver'''
+
+
 # ------------------------------------------------------------------------------
 
 
@@ -392,6 +402,7 @@ class CredentialDict(TypedDict):
     '''Collection of credentials required to access Twitch Chat'''
     TwitchAPI: NotRequired[TwitchAPICredentialDict]
     '''Collection of credentials required to access Twitch API calls'''
+    OBS: NotRequired[OBSInformationDict]
 
 # ==================================================================================================
 
