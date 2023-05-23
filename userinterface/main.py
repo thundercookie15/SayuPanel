@@ -24,8 +24,14 @@ allowed_file_types = (("Image Files", "*.png"), ("Image Files", "*.jpg"), ("Imag
 
 
 def main():
+    check_image_file()
     this = GUI()
     this.__init__()
+
+
+def check_image_file():
+    if not os.path.exists('userinterface/images'):
+        os.makedirs('userinterface/images')
 
 
 def main_layout():
@@ -107,7 +113,7 @@ def controls_layout():
              sg.Button('Hide Image', font="Helvetica", key='set_invisible', button_color=('white', 'red'), )],
             [sg.Text('Choose an image: '), sg.Input(size=30),
              sg.FileBrowse(key='-FILEIN-', file_types=allowed_file_types,
-                           initial_folder='userinterface/temp_images'), ],
+                           initial_folder='userinterface/images'), ],
             [sg.Button('Upload', key='upload_image')],
         ], element_justification='center', title_location='n')],
         [sg.Frame(title='Poll Controls', layout=[

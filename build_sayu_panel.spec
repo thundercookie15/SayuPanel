@@ -1,11 +1,11 @@
 # -*- mode: python ; coding: utf-8 -*-
 
-# native imports
+## native imports
 import sys
 from os import environ
 from pathlib import Path
 
-# pip imports
+## pip imports
 from PyInstaller.building.build_main import COLLECT
 from PyInstaller.building.build_main import EXE
 from PyInstaller.building.build_main import PYZ
@@ -17,7 +17,7 @@ from PyInstaller.utils.hooks import collect_submodules
 
 sys.path.append(str(Path('.').absolute()))  # required to make import work
 
-# local imports
+## local imports
 from install_hooks.post_install import clean_up  # noqa: E402
 
 
@@ -44,7 +44,7 @@ extra_folders = (
   Tree('./data/', prefix='data', excludes=['.gitignore', 'session'])
 )
 
-# required to make collect_submodules work
+## required to make collect_submodules work
 environ['PYTHONPATH'] = str(Path('.').absolute())
 
 hidden_imports = (
