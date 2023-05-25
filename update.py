@@ -6,9 +6,9 @@ import sys
 def y_n(q):
     while True:
         ri = input("{} (y/n): ".format(q))
-        if ri.lower in ["yes", "y"]:
+        if ri.lower() in ["yes", "y"]:
             return True
-        elif ri.lower in ["no", "n"]:
+        elif ri.lower() in ["no", "n"]:
             return False
 
 
