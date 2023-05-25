@@ -15,6 +15,8 @@ from typing import Literal
 from typing import TypeVar
 from typing import cast
 
+from socket import gethostname
+
 from .json_utils import InvalidCredentialsError
 from .json_utils import decode_credential
 from .json_utils import read_config_and_credentials

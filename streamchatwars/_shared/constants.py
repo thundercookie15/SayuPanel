@@ -196,6 +196,20 @@ DEFAULT_CREDENTIAL_CONTENTS: Final = """{
       "type": "cleartext",
       "value": "YOUR_TWITCH_API_CLIENT_SECRET"
     }
+  },
+  "OBS": {
+    "host": {
+        "type": "cleartext",
+        "value": "ENTER IP ADDRESS OF OBS COMPUTER"
+    },
+    "port": {
+        "type": "cleartext",
+        "value": "ENTER PORT OF OBS COMPUTER"
+    },
+    "webserver": {
+        "type": "cleartext",
+        "value": "ENTER WEBSERVER IP"
+    }
   }
 }
 """  # end of file contents, next line start of doc string

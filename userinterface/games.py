@@ -1,7 +1,7 @@
 '''Game folder for DIVEKICK'''
-GAME_DIVEKICK = {'name': 'Divekick', 'config': 'data/config/Divekick_T2_T3.json'}
+GAME_DIVEKICK = {'name': 'Divekick', 'config': 'data/config/Divekick_T2T3.json'}
 '''Game folder for Duck Game'''
-GAME_DUCKGAME = {'name': 'Duck Game', 'config': 'data/config/DuckGame_T2_T3.json'}
+GAME_DUCKGAME = {'name': 'Duck Game', 'config': 'data/config/DuckGame_T2T3.json'}
 '''Game folder for Jump King'''
 GAME_JUMPKING = {'name': 'Jump King', 'config': 'data/config/JumpKing_remote.json'}
 '''Game folder for Stick Fight'''

@@ -57,6 +57,7 @@ Pygments==2.15.0
 pyinstaller==5.10.1
 pyinstaller-hooks-contrib==2023.2
 pysimplegui==4.60.4
+psutil==5.9.5
 pypiwin32==223
 pyrsistent==0.19.3
 pytest==7.3.1

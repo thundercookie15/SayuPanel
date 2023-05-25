@@ -719,4 +719,34 @@ def decode_credential(
         return decoded_value
     # Default:
     return _default
+
+
 # ------------------------------------------------------------------------------
+
+def write_credentials_file(
+        credentials_dict: CredentialDict,
+        filename: str | Path,
+) -> None:
+    if filename == '':
+        raise ValueError("Invalid argument: filename")
+    json_data: CredentialDict = credentials_dict
+    json_str: str = json.dumps(json_data, indent=DEFAULT_INDENT_LEVEL)
+
+    # ----- Read file -----
+    schema_data: SCHEMA_MAPPING
+    schema_data, _ = read_json_file(
+        filename=CREDENTIAL_SCHEMA_FILE,
+        file_descriptor='credential schema',
+        suppress_error=True,
+    )
+    # ----- Write file -----
+    try:
+        with open(filename, mode='w', encoding='utf-8') as config_file:
+            config_file.write(json_str)
+            config_file.write('\n')
+    except OSError:
+        thread_print(ColorText.error(
+            f"Failed to open credential file {str(filename)}\n"
+            "You should investigate this error! Moving on for now..."
+        ))
+        thread_print_exc()
