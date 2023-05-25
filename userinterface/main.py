@@ -272,6 +272,16 @@ def set_values(host, port, webserver):
     OBS_WEBSERVER = webserver
 
 
+def is_obs_running():
+    for proc in psutil.process_iter():
+        try:
+            if proc.name().lower() == 'obs64.exe':
+                return True
+        except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
+            pass
+    return False
+
+
 class GUI:
     config: ConfigDict
     credentials: CredentialDict
@@ -354,11 +364,10 @@ class GUI:
                     self.status_panel_thread.start()
                     self.start_update_windows()
             elif event == 'bot_login':  # Twitch Login
-                print(self.check_login_values(values))
                 if self.check_login_values(values):
                     self.set_new_credentials(values)
             elif event == 'start_webserver':
-                if not self.is_obs_running():
+                if not is_obs_running():
                     sg.popup('OBS is not running, please start OBS first')
                     pass
                 else:
@@ -505,12 +514,14 @@ class GUI:
             print("Twitch credentials file exists, checking credentials...")
             self.validate_credentials()
         except (OSError, JSONDecodeError, ValidationError):
+            self.config, self.credentials = read_json_configs()
             self.update_current_layout('Login')
             # sg.popup("Invalid Twitch Chat credentials found. Go yell at thundercookie15 to send you new ones.")
 
     def validate_credentials(self) -> None | bool:
         chat_credentials: TwitchChatCredentialDict | None
         chat_credentials = self.credentials.get("TwitchChat", None)
+
         if not chat_credentials:
             print("No Twitch chat credentials provided.")
             sg.popup("No Twitch Chat credentials found. Go yell at thundercookie15 to send you new ones.")
@@ -560,7 +571,6 @@ class GUI:
         obs_host = values['obs_websocket_host']
         obs_port = values['obs_websocket_port']
         obs_poll_address = values['obs_poll_address']
-        print(self.credentials.get("TwitchChat"))
         self.credentials.get("TwitchChat").get("username").update({"value": username})
         self.credentials.get("TwitchChat").get("oauth_token").update({"value": oauth})
         self.credentials.get("TwitchAPI").get("client_id").update({"value": client_id})
@@ -568,7 +578,6 @@ class GUI:
         self.credentials.get("OBS").get("host").update({"value": obs_host})
         self.credentials.get("OBS").get("port").update({"value": obs_port})
         self.credentials.get("OBS").get("webserver").update({"value": obs_poll_address})
-        print(self.credentials)
         json_utils.write_credentials_file(self.credentials, DEFAULT_CREDENTIAL_FILE)
         self.check_twitch_credentials()
 
@@ -643,13 +652,4 @@ class GUI:
         self.obs_hook = None
         self.window['obs_setup'].update(visible=False)
         self.window['controls'].update(visible=False)
-
-    def is_obs_running(self):
-        for proc in psutil.process_iter():
-            try:
-                if proc.name().lower() == 'obs64.exe':
-                    return True
-            except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
-                pass
-        return False
 
