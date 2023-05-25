@@ -372,7 +372,8 @@ class GUI:
                         self.window['controls'].update(visible=True)
                         self.window['scene_setup'].update(self.obs_hook.get_scene())
             elif event == 'stop_webserver':
-                self.stop_obs_server()
+                if self.obs_hook is not None:
+                    self.stop_obs_server()
             elif event == 'test_button':
                 if self.obs_hook is not None:
                     self.obs_hook.test_function()
