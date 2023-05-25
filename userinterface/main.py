@@ -6,6 +6,7 @@ import subprocess
 import sys
 import threading
 from json import JSONDecodeError
+import psutil
 
 import PySimpleGUI as sg
 import pydirectinput
@@ -357,15 +358,19 @@ class GUI:
                 if self.check_login_values(values):
                     self.set_new_credentials(values)
             elif event == 'start_webserver':
-                self.obs_hook = obsplugin.start_connection()
-                self.window['selected_scene'].update(values=self.obs_hook.get_obs_scenes(), value='none')
-                if not self.obs_hook.is_obs_setup():
-                    self.window['obs_setup'].update(visible=True)
-                    self.window['controls'].update(visible=False)
+                if not self.is_obs_running():
+                    sg.popup('OBS is not running, please start OBS first')
+                    pass
                 else:
-                    self.window['obs_setup'].update(visible=False)
-                    self.window['controls'].update(visible=True)
-                    self.window['scene_setup'].update(self.obs_hook.get_scene())
+                    self.obs_hook = obsplugin.start_connection()
+                    self.window['selected_scene'].update(values=self.obs_hook.get_obs_scenes(), value='none')
+                    if not self.obs_hook.is_obs_setup():
+                        self.window['obs_setup'].update(visible=True)
+                        self.window['controls'].update(visible=False)
+                    else:
+                        self.window['obs_setup'].update(visible=False)
+                        self.window['controls'].update(visible=True)
+                        self.window['scene_setup'].update(self.obs_hook.get_scene())
             elif event == 'stop_webserver':
                 self.stop_obs_server()
             elif event == 'test_button':
@@ -637,3 +642,13 @@ class GUI:
         self.obs_hook = None
         self.window['obs_setup'].update(visible=False)
         self.window['controls'].update(visible=False)
+
+    def is_obs_running(self):
+        for proc in psutil.process_iter():
+            try:
+                if proc.name().lower() == 'obs64.exe':
+                    return True
+            except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
+                pass
+        return False
+
