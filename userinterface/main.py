@@ -6,9 +6,9 @@ import subprocess
 import sys
 import threading
 from json import JSONDecodeError
-import psutil
 
 import PySimpleGUI as sg
+import psutil
 import pydirectinput
 from jsonschema import ValidationError
 
@@ -123,6 +123,8 @@ def controls_layout():
              sg.Text('', key='poll_status_text', )],
             [sg.Button('Enable Poll', font="Helvetica", key='enable_poll', button_color=('white', 'green'), ),
              sg.Button('Disable Poll', font="Helvetica", key='disable_poll', button_color=('white', 'red'), )],
+            [sg.Button('Show Poll', font="Helvetica", key='show_poll', button_color=('white', 'green'), ),
+             sg.Button('Hide Poll', font="Helvetica", key='hide_poll', button_color=('white', 'red'), )],
             [sg.Button('Reset Poll', font="Helvetica", key='reset_poll', button_color=('white', 'red'), ), ]
         ], element_justification='center', title_location='n')],
         [sg.Button('Remove OBS Sources', font="Helvetica", key='remove_sources', button_color=('white', 'red'), )],
@@ -396,10 +398,16 @@ class GUI:
                 self.obs_hook.swap_to_scene()
             elif event == 'set_visible':
                 if self.obs_hook is not None:
-                    self.obs_hook.set_scene_visibity(True)
+                    self.obs_hook.set_scene_visibity(True, self.obs_hook.image_source_name)
             elif event == 'set_invisible':
                 if self.obs_hook is not None:
-                    self.obs_hook.set_scene_visibity(False)
+                    self.obs_hook.set_scene_visibity(False, self.obs_hook.image_source_name)
+            elif event == 'show_poll':
+                if self.obs_hook is not None:
+                    self.obs_hook.set_scene_visibity(True, self.obs_hook.poll_source_name)
+            elif event == 'hide_poll':
+                if self.obs_hook is not None:
+                    self.obs_hook.set_scene_visibity(False, self.obs_hook.poll_source_name)
             elif event == 'upload_image':
                 self.obs_hook.set_image(values['-FILEIN-'])
             elif event == 'enable_poll':
@@ -652,4 +660,3 @@ class GUI:
         self.obs_hook = None
         self.window['obs_setup'].update(visible=False)
         self.window['controls'].update(visible=False)
-
