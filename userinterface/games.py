@@ -2,6 +2,8 @@
 GAME_DIVEKICK = {'name': 'Divekick', 'config': 'data/config/Divekick_T2T3.json'}
 '''Game folder for Duck Game'''
 GAME_DUCKGAME = {'name': 'Duck Game', 'config': 'data/config/DuckGame_T2T3.json'}
+'''Game folder for Grand Theft Auto V'''
+GAME_GTA = {'name': 'Grand Theft Auto V', 'config': 'data/config/gta_remote.json'}
 '''Game folder for Jump King'''
 GAME_JUMPKING = {'name': 'Jump King', 'config': 'data/config/JumpKing_remote.json'}
 '''Game folder for Stick Fight'''
@@ -10,7 +12,7 @@ GAME_STICKFIGHT = {'name': 'Stick Fight', 'config': 'data/config/StickFight_GP2_
 
 def get_games():
     """Returns a list of all games"""
-    return [GAME_DIVEKICK, GAME_DUCKGAME, GAME_JUMPKING, GAME_STICKFIGHT]
+    return [GAME_DIVEKICK, GAME_DUCKGAME, GAME_GTA, GAME_JUMPKING, GAME_STICKFIGHT]
 
 
 def get_game_names():
