@@ -24,10 +24,10 @@ class GTA_GP_Actionset(Gamepad_Actionset):
     ------------|----------------|
     Drive       | {Right Trigger}|
     Reverse     | {Left Trigger} |
-    Handbrake   | {Right Bumper} |
-    Left        | {Right Stick L}|
-    Right       | {Right Stick R}|
-    Horn        | {Right Stick}  |
+    Brake       | {Right Bumper} |
+    Left        | {Left Stick L} |
+    Right       | {Left Stick R} |
+    Horn        | {Left Stick}   |
     '''
 
     key_dict: ClassVar[dict[str, Sequence[str]]] = {
