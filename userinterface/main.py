@@ -330,7 +330,7 @@ class GUI:
                             ]
 
     def __main__(self):
-        self.window = sg.Window('Sayu Stream Extensions', self.layout_list, size=(800, 700), finalize=True)
+        self.window = sg.Window('Sayu Stream Extensions', self.layout_list, size=(800, 700), finalize=True, icon='userinterface/icon.ico')
 
         self.check_twitch_credentials()  # Check if twitch credentials are present
         # self.validate_credentials()  # Validate Twitch Credentials
