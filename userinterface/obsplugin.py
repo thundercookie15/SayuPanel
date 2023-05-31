@@ -62,9 +62,9 @@ class ObsSocket:
         return self.client.call(requests.GetSceneItemId(sceneName=self.scene, sourceName=item_name)).datain.get(
             'sceneItemId')
 
-    def set_scene_visibity(self, visible):
+    def set_scene_visibity(self, visible, scene_name):
         self.client.call(
-            requests.SetSceneItemEnabled(sceneName=self.scene, sceneItemId=self.get_scene_item_id('TextTest'),
+            requests.SetSceneItemEnabled(sceneName=self.scene, sceneItemId=self.get_scene_item_id(scene_name),
                                          sceneItemEnabled=visible))
 
     def is_obs_setup(self):

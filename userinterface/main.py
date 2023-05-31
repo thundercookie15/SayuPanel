@@ -6,9 +6,9 @@ import subprocess
 import sys
 import threading
 from json import JSONDecodeError
-import psutil
 
 import PySimpleGUI as sg
+import psutil
 import pydirectinput
 from jsonschema import ValidationError
 
@@ -123,6 +123,8 @@ def controls_layout():
              sg.Text('', key='poll_status_text', )],
             [sg.Button('Enable Poll', font="Helvetica", key='enable_poll', button_color=('white', 'green'), ),
              sg.Button('Disable Poll', font="Helvetica", key='disable_poll', button_color=('white', 'red'), )],
+            [sg.Button('Show Poll', font="Helvetica", key='show_poll', button_color=('white', 'green'), ),
+             sg.Button('Hide Poll', font="Helvetica", key='hide_poll', button_color=('white', 'red'), )],
             [sg.Button('Reset Poll', font="Helvetica", key='reset_poll', button_color=('white', 'red'), ), ]
         ], element_justification='center', title_location='n')],
         [sg.Button('Remove OBS Sources', font="Helvetica", key='remove_sources', button_color=('white', 'red'), )],
@@ -272,6 +274,34 @@ def set_values(host, port, webserver):
     OBS_WEBSERVER = webserver
 
 
+def is_obs_running():
+    for proc in psutil.process_iter():
+        try:
+            if proc.name().lower() == 'obs64.exe':
+                return True
+        except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
+            pass
+    return False
+
+
+def check_login_values(values):
+    if values['bot_username'] == '':
+        return False
+    elif values['bot_oauth'] == '':
+        return False
+    elif values['twitch_api_client_id'] == '':
+        return False
+    elif values['twitch_api_client_secret'] == '':
+        return False
+    elif values['obs_websocket_host'] == '':
+        return False
+    elif values['obs_websocket_port'] == '':
+        return False
+    elif values['obs_poll_address'] == '':
+        return False
+    return True
+
+
 class GUI:
     config: ConfigDict
     credentials: CredentialDict
@@ -283,8 +313,6 @@ class GUI:
         """
         self.status_panel_thread = threading.Thread(target=self.update_status_panel, args=())
         self.status_panel_thread.daemon = True
-
-        self.update_windows_event = threading.Event()
 
         self.current_layout = None  # Current used layout
         self.layout_list = []  # List of all layouts
@@ -299,8 +327,6 @@ class GUI:
         self.stream_chat_wars_process = None
         self.obs_hook = None
         ##########################################################
-        self.load_layouts()
-
         sg.theme('DarkAmber')
         sg.set_options(font=("Helvetica", 15))
         sg.theme_input_background_color('black')
@@ -318,7 +344,9 @@ class GUI:
                             ]
 
     def __main__(self):
-        self.window = sg.Window('Sayu Stream Extensions', self.layout_list, size=(800, 700), finalize=True)
+        self.window = sg.Window('Sayu Stream Extensions', self.layout_list, size=(800, 700), finalize=True,
+                                icon='userinterface/icon.ico')
+        self.status_panel_thread.start()
 
         self.check_twitch_credentials()  # Check if twitch credentials are present
         # self.validate_credentials()  # Validate Twitch Credentials
@@ -326,7 +354,6 @@ class GUI:
         while True:
             event, values = self.window.read(timeout=1000)
             if event == sg.WIN_CLOSED or event == 'exit' or event == 'Exit':  # Exit
-                self.update_windows_event.clear()
                 print('Shutting down...')
                 print('Closing all processes...')
                 if self.stream_chat_wars_started:
@@ -350,15 +377,11 @@ class GUI:
                 pass
             elif event == 'chat_picks':  # Chat Picks
                 self.update_current_layout('Chat_Picks')
-                if not self.status_panel_thread.is_alive():
-                    self.status_panel_thread.start()
-                    self.start_update_windows()
             elif event == 'bot_login':  # Twitch Login
-                print(self.check_login_values(values))
-                if self.check_login_values(values):
+                if check_login_values(values):
                     self.set_new_credentials(values)
             elif event == 'start_webserver':
-                if not self.is_obs_running():
+                if not is_obs_running():
                     sg.popup('OBS is not running, please start OBS first')
                     pass
                 else:
@@ -372,7 +395,8 @@ class GUI:
                         self.window['controls'].update(visible=True)
                         self.window['scene_setup'].update(self.obs_hook.get_scene())
             elif event == 'stop_webserver':
-                self.stop_obs_server()
+                if self.obs_hook is not None:
+                    self.stop_obs_server()
             elif event == 'test_button':
                 if self.obs_hook is not None:
                     self.obs_hook.test_function()
@@ -386,10 +410,16 @@ class GUI:
                 self.obs_hook.swap_to_scene()
             elif event == 'set_visible':
                 if self.obs_hook is not None:
-                    self.obs_hook.set_scene_visibity(True)
+                    self.obs_hook.set_scene_visibity(True, self.obs_hook.image_source_name)
             elif event == 'set_invisible':
                 if self.obs_hook is not None:
-                    self.obs_hook.set_scene_visibity(False)
+                    self.obs_hook.set_scene_visibity(False, self.obs_hook.image_source_name)
+            elif event == 'show_poll':
+                if self.obs_hook is not None:
+                    self.obs_hook.set_scene_visibity(True, self.obs_hook.poll_source_name)
+            elif event == 'hide_poll':
+                if self.obs_hook is not None:
+                    self.obs_hook.set_scene_visibity(False, self.obs_hook.poll_source_name)
             elif event == 'upload_image':
                 self.obs_hook.set_image(values['-FILEIN-'])
             elif event == 'enable_poll':
@@ -402,9 +432,6 @@ class GUI:
                 self.obs_hook.remove_sources()
             elif event == 'stream_chat_wars':  # Stream Chat Wars
                 self.update_current_layout('Stream_Chat_Wars')
-                if not self.status_panel_thread.is_alive():
-                    self.status_panel_thread.start()
-                    self.start_update_windows()
             elif event == 'start_input_server':  # Start Input Server
                 self.start_input_server()
             elif event == 'stop_input_server':  # Stop Input Server
@@ -504,12 +531,14 @@ class GUI:
             print("Twitch credentials file exists, checking credentials...")
             self.validate_credentials()
         except (OSError, JSONDecodeError, ValidationError):
+            self.config, self.credentials = read_json_configs()
             self.update_current_layout('Login')
             # sg.popup("Invalid Twitch Chat credentials found. Go yell at thundercookie15 to send you new ones.")
 
     def validate_credentials(self) -> None | bool:
         chat_credentials: TwitchChatCredentialDict | None
         chat_credentials = self.credentials.get("TwitchChat", None)
+
         if not chat_credentials:
             print("No Twitch chat credentials provided.")
             sg.popup("No Twitch Chat credentials found. Go yell at thundercookie15 to send you new ones.")
@@ -534,23 +563,6 @@ class GUI:
             self.update_current_layout('Login')
             return False
 
-    def check_login_values(self, values):
-        if values['bot_username'] == '':
-            return False
-        elif values['bot_oauth'] == '':
-            return False
-        elif values['twitch_api_client_id'] == '':
-            return False
-        elif values['twitch_api_client_secret'] == '':
-            return False
-        elif values['obs_websocket_host'] == '':
-            return False
-        elif values['obs_websocket_port'] == '':
-            return False
-        elif values['obs_poll_address'] == '':
-            return False
-        return True
-
     def set_new_credentials(self, values):
         username = values['bot_username']
         oauth = values['bot_oauth']
@@ -559,7 +571,6 @@ class GUI:
         obs_host = values['obs_websocket_host']
         obs_port = values['obs_websocket_port']
         obs_poll_address = values['obs_poll_address']
-        print(self.credentials.get("TwitchChat"))
         self.credentials.get("TwitchChat").get("username").update({"value": username})
         self.credentials.get("TwitchChat").get("oauth_token").update({"value": oauth})
         self.credentials.get("TwitchAPI").get("client_id").update({"value": client_id})
@@ -567,14 +578,11 @@ class GUI:
         self.credentials.get("OBS").get("host").update({"value": obs_host})
         self.credentials.get("OBS").get("port").update({"value": obs_port})
         self.credentials.get("OBS").get("webserver").update({"value": obs_poll_address})
-        print(self.credentials)
         json_utils.write_credentials_file(self.credentials, DEFAULT_CREDENTIAL_FILE)
         self.check_twitch_credentials()
 
     def update_status_panel(self):
         while True:
-            if self.update_windows_event.is_set():
-                break
             if self.current_layout == 'Chat_Picks':
                 if self.obs_hook is not None:
                     if self.obs_hook.is_obs_setup:
@@ -631,24 +639,8 @@ class GUI:
 
             self.window.refresh()
 
-    def start_update_windows(self):
-        self.update_windows_event.clear()
-
-    def stop_update_windows(self):
-        self.update_windows_event.set()
-
     def stop_obs_server(self):
         self.obs_hook.close_connection()
         self.obs_hook = None
         self.window['obs_setup'].update(visible=False)
         self.window['controls'].update(visible=False)
-
-    def is_obs_running(self):
-        for proc in psutil.process_iter():
-            try:
-                if proc.name().lower() == 'obs64.exe':
-                    return True
-            except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
-                pass
-        return False
-
