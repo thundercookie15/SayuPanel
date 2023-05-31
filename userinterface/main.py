@@ -330,7 +330,8 @@ class GUI:
                             ]
 
     def __main__(self):
-        self.window = sg.Window('Sayu Stream Extensions', self.layout_list, size=(800, 700), finalize=True, icon='userinterface/icon.ico')
+        self.window = sg.Window('Sayu Stream Extensions', self.layout_list, size=(800, 700), finalize=True,
+                                icon='userinterface/icon.ico')
 
         self.check_twitch_credentials()  # Check if twitch credentials are present
         # self.validate_credentials()  # Validate Twitch Credentials
@@ -359,12 +360,10 @@ class GUI:
                 exit(0)
             elif event == 'Menu' or event == 'Main_Menu':  # Main Menu
                 self.update_current_layout('Main')
-                pass
+                self.stop_update_windows()
             elif event == 'chat_picks':  # Chat Picks
                 self.update_current_layout('Chat_Picks')
-                if not self.status_panel_thread.is_alive():
-                    self.status_panel_thread.start()
-                    self.start_update_windows()
+                self.start_update_thread()
             elif event == 'bot_login':  # Twitch Login
                 if self.check_login_values(values):
                     self.set_new_credentials(values)
@@ -420,9 +419,7 @@ class GUI:
                 self.obs_hook.remove_sources()
             elif event == 'stream_chat_wars':  # Stream Chat Wars
                 self.update_current_layout('Stream_Chat_Wars')
-                if not self.status_panel_thread.is_alive():
-                    self.status_panel_thread.start()
-                    self.start_update_windows()
+                self.start_update_thread()
             elif event == 'start_input_server':  # Start Input Server
                 self.start_input_server()
             elif event == 'stop_input_server':  # Stop Input Server
@@ -592,7 +589,8 @@ class GUI:
     def update_status_panel(self):
         while True:
             if self.update_windows_event.is_set():
-                break
+                print('Break')
+                pass
             if self.current_layout == 'Chat_Picks':
                 if self.obs_hook is not None:
                     if self.obs_hook.is_obs_setup:
@@ -649,8 +647,18 @@ class GUI:
 
             self.window.refresh()
 
+    def start_update_thread(self):
+        try:
+            if not self.status_panel_thread.is_alive():
+                self.start_update_windows()
+                self.status_panel_thread.start()
+                print('Starting status panel thread')
+        except RuntimeError:
+            print('Continuing status panel thread')
+            self.start_update_windows()
+
     def start_update_windows(self):
-        self.update_windows_event.clear()
+        self.update_windows_event = threading.Event()
 
     def stop_update_windows(self):
         self.update_windows_event.set()
