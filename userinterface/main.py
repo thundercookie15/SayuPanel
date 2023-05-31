@@ -284,6 +284,24 @@ def is_obs_running():
     return False
 
 
+def check_login_values(values):
+    if values['bot_username'] == '':
+        return False
+    elif values['bot_oauth'] == '':
+        return False
+    elif values['twitch_api_client_id'] == '':
+        return False
+    elif values['twitch_api_client_secret'] == '':
+        return False
+    elif values['obs_websocket_host'] == '':
+        return False
+    elif values['obs_websocket_port'] == '':
+        return False
+    elif values['obs_poll_address'] == '':
+        return False
+    return True
+
+
 class GUI:
     config: ConfigDict
     credentials: CredentialDict
@@ -295,8 +313,6 @@ class GUI:
         """
         self.status_panel_thread = threading.Thread(target=self.update_status_panel, args=())
         self.status_panel_thread.daemon = True
-
-        self.update_windows_event = threading.Event()
 
         self.current_layout = None  # Current used layout
         self.layout_list = []  # List of all layouts
@@ -311,8 +327,6 @@ class GUI:
         self.stream_chat_wars_process = None
         self.obs_hook = None
         ##########################################################
-        self.load_layouts()
-
         sg.theme('DarkAmber')
         sg.set_options(font=("Helvetica", 15))
         sg.theme_input_background_color('black')
@@ -330,7 +344,9 @@ class GUI:
                             ]
 
     def __main__(self):
-        self.window = sg.Window('Sayu Stream Extensions', self.layout_list, size=(800, 700), finalize=True, icon='userinterface/icon.ico')
+        self.window = sg.Window('Sayu Stream Extensions', self.layout_list, size=(800, 700), finalize=True,
+                                icon='userinterface/icon.ico')
+        self.status_panel_thread.start()
 
         self.check_twitch_credentials()  # Check if twitch credentials are present
         # self.validate_credentials()  # Validate Twitch Credentials
@@ -338,7 +354,6 @@ class GUI:
         while True:
             event, values = self.window.read(timeout=1000)
             if event == sg.WIN_CLOSED or event == 'exit' or event == 'Exit':  # Exit
-                self.update_windows_event.clear()
                 print('Shutting down...')
                 print('Closing all processes...')
                 if self.stream_chat_wars_started:
@@ -362,11 +377,8 @@ class GUI:
                 pass
             elif event == 'chat_picks':  # Chat Picks
                 self.update_current_layout('Chat_Picks')
-                if not self.status_panel_thread.is_alive():
-                    self.status_panel_thread.start()
-                    self.start_update_windows()
             elif event == 'bot_login':  # Twitch Login
-                if self.check_login_values(values):
+                if check_login_values(values):
                     self.set_new_credentials(values)
             elif event == 'start_webserver':
                 if not is_obs_running():
@@ -420,9 +432,6 @@ class GUI:
                 self.obs_hook.remove_sources()
             elif event == 'stream_chat_wars':  # Stream Chat Wars
                 self.update_current_layout('Stream_Chat_Wars')
-                if not self.status_panel_thread.is_alive():
-                    self.status_panel_thread.start()
-                    self.start_update_windows()
             elif event == 'start_input_server':  # Start Input Server
                 self.start_input_server()
             elif event == 'stop_input_server':  # Stop Input Server
@@ -554,23 +563,6 @@ class GUI:
             self.update_current_layout('Login')
             return False
 
-    def check_login_values(self, values):
-        if values['bot_username'] == '':
-            return False
-        elif values['bot_oauth'] == '':
-            return False
-        elif values['twitch_api_client_id'] == '':
-            return False
-        elif values['twitch_api_client_secret'] == '':
-            return False
-        elif values['obs_websocket_host'] == '':
-            return False
-        elif values['obs_websocket_port'] == '':
-            return False
-        elif values['obs_poll_address'] == '':
-            return False
-        return True
-
     def set_new_credentials(self, values):
         username = values['bot_username']
         oauth = values['bot_oauth']
@@ -591,8 +583,6 @@ class GUI:
 
     def update_status_panel(self):
         while True:
-            if self.update_windows_event.is_set():
-                break
             if self.current_layout == 'Chat_Picks':
                 if self.obs_hook is not None:
                     if self.obs_hook.is_obs_setup:
@@ -648,12 +638,6 @@ class GUI:
                         self.window['input_status'].update('Stopped', text_color='red')
 
             self.window.refresh()
-
-    def start_update_windows(self):
-        self.update_windows_event.clear()
-
-    def stop_update_windows(self):
-        self.update_windows_event.set()
 
     def stop_obs_server(self):
         self.obs_hook.close_connection()
