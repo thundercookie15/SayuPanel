@@ -83,8 +83,9 @@ def chat_picks_layout():
                         visible=False)],
             ])],
             [sg.Text(
-                'Do not touch the sources created by the program. They are used for the program to work and will not function properly without them.',
-                text_color='red', font=("Helvetica", 8))],
+                'Do not adjust the sources created by the program. They are used for the program to work and will not function properly without them.'
+                '\nYou can change the position of the sources in OBS but don\'t change the name or properties of the sources.',
+                text_color='red', font=("Helvetica", 8), justification='center')],
             [sg.HSeparator()],
             [sg.Button('Main Menu', font="Helvetica", key='Main_Menu', button_color=('white', 'red'),
                        border_width=3), ]
