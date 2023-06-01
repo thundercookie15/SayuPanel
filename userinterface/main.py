@@ -430,6 +430,8 @@ class GUI:
                 self.obs_hook.reset_poll()
             elif event == 'remove_sources':
                 self.obs_hook.remove_sources()
+                self.window['obs_setup'].update(visible=True)
+                self.window['controls'].update(visible=False)
             elif event == 'stream_chat_wars':  # Stream Chat Wars
                 self.update_current_layout('Stream_Chat_Wars')
             elif event == 'start_input_server':  # Start Input Server
