@@ -83,8 +83,9 @@ def chat_picks_layout():
                         visible=False)],
             ])],
             [sg.Text(
-                'Do not touch the sources created by the program. They are used for the program to work and will not function properly without them.',
-                text_color='red', font=("Helvetica", 8))],
+                'Do not adjust the sources created by the program. They are used for the program to work and will not function properly without them.'
+                '\nYou can change the position of the sources in OBS but don\'t change the name or properties of the sources.',
+                text_color='red', font=("Helvetica", 8), justification='center')],
             [sg.HSeparator()],
             [sg.Button('Main Menu', font="Helvetica", key='Main_Menu', button_color=('white', 'red'),
                        border_width=3), ]
@@ -430,6 +431,8 @@ class GUI:
                 self.obs_hook.reset_poll()
             elif event == 'remove_sources':
                 self.obs_hook.remove_sources()
+                self.window['obs_setup'].update(visible=True)
+                self.window['controls'].update(visible=False)
             elif event == 'stream_chat_wars':  # Stream Chat Wars
                 self.update_current_layout('Stream_Chat_Wars')
             elif event == 'start_input_server':  # Start Input Server
