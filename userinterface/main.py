@@ -50,7 +50,8 @@ def main_layout():
                                      border_width=3),
                            sg.Button('Stream Chat Wars', font="Helvetica", key='stream_chat_wars',
                                      button_color=('white', 'gold'),
-                                     border_width=3)]
+                                     border_width=3)],
+                          [sg.Button('Reset credentials', font="Helvetica", key='reset_credentials', button_color=('white', 'red'), border_width=3)],
                       ])],
             [sg.Button('Exit', font="Helvetica", key='Exit', button_color=('white', 'red'),
                        border_width=3)]
@@ -509,8 +510,6 @@ class GUI:
 
     def check_process_state(self):  # Check if the servers are running
         if self.input_server_started:  # Check if the Input Server is running
-            # self.window['start_input_server'].update(disabled=True)
-            # self.window['stop_input_server'].update(disabled=False)
             if self.input_server_process.poll() is None:
                 print('Input Server is running.')
             else:
@@ -518,8 +517,6 @@ class GUI:
                 print('Input Server is not running.')
 
         if self.stream_chat_wars_started:  # Check if the Stream Chat Wars is running
-            # self.window['start_stream_chat_wars'].update(disabled=True)
-            # self.window['stop_stream_chat_wars'].update(disabled=False)
             if self.stream_chat_wars_process.poll() is None:
                 print('Stream Chat Wars is running.')
             else:
