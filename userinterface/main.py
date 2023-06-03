@@ -253,7 +253,9 @@ def login_layout():
                      sg.InputText(key='obs_poll_address', font=("Helvetica", 15), size=(20, 1))],
                     [sg.Button('Login', font="Helvetica", key='bot_login', button_color=('white', 'green'))],
                 ], vertical_alignment='center', element_justification='center')],
-        ], justification='center', vertical_alignment='center')],
+            [sg.Button('Exit', font="Helvetica", key='Exit_1', button_color=('white', 'red'),
+                       border_width=3)]
+        ], justification='center', vertical_alignment='center', element_justification='center')]
     ]
 
 
@@ -355,7 +357,7 @@ class GUI:
 
         while True:
             event, values = self.window.read(timeout=1000)
-            if event == sg.WIN_CLOSED or event == 'exit' or event == 'Exit':  # Exit
+            if event == sg.WIN_CLOSED or event == 'exit' or event == 'Exit' or event == 'Exit_1':  # Exit
                 print('Shutting down...')
                 print('Closing all processes...')
                 if self.stream_chat_wars_started:
