@@ -56,9 +56,9 @@ def main():
         except subprocess.CalledProcessError:
             print("Failed to update the program. Please do it manually.")
 
-        update_deps()
+    update_deps()
 
-        print("Done!")
+    print("Done!")
 
 
 if __name__ == '__main__':
