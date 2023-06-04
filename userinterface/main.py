@@ -530,7 +530,7 @@ class GUI:
         credentials_arg: str | None = sys.argv[2] if len(sys.argv) > 2 else None
         try:
             self.config, self.credentials = read_json_configs(config_arg, credentials_arg)
-            print("Twitch credentials file exists, checking credentials...")
+            print("Credentials file exists, checking credentials...")
             self.validate_credentials()
         except (OSError, JSONDecodeError, ValidationError):
             self.config, self.credentials = read_json_configs()
@@ -555,11 +555,11 @@ class GUI:
             host = self.credentials.get("OBS", {}).get("host").get("value")
             port = self.credentials.get("OBS", {}).get("port").get("value")
             webserver = self.credentials.get("OBS", {}).get("webserver").get("value")
+            if username == "YOUR_BOT_USERNAME_LOWERCASE" or oauth == "YOUR_BOT_OAUTH_TOKEN":
+                raise InvalidCredentialsError
             set_values(host, port, webserver)
             print('Credentials validated...')
             self.update_current_layout('Main')
-            if username == "YOUR_BOT_USERNAME_LOWERCASE" or oauth == "YOUR_BOT_OAUTH_TOKEN":
-                raise InvalidCredentialsError
         except InvalidCredentialsError:
             # sg.popup("Invalid Twitch Chat credentials found. Go yell at thundercookie15 to send you new ones.")
             self.update_current_layout('Login')
