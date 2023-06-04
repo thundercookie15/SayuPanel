@@ -385,19 +385,19 @@ class GUI:
                 if check_login_values(values):
                     self.set_new_credentials(values)
             elif event == 'start_webserver':
-                if not is_obs_running():
-                    sg.popup('OBS is not running, please start OBS first')
-                    pass
+                # if not is_obs_running():
+                #     sg.popup('OBS is not running, please start OBS first')
+                #     pass
+                # else:
+                self.obs_hook = obsplugin.start_connection()
+                self.window['selected_scene'].update(values=self.obs_hook.get_obs_scenes(), value='none')
+                if not self.obs_hook.is_obs_setup():
+                    self.window['obs_setup'].update(visible=True)
+                    self.window['controls'].update(visible=False)
                 else:
-                    self.obs_hook = obsplugin.start_connection()
-                    self.window['selected_scene'].update(values=self.obs_hook.get_obs_scenes(), value='none')
-                    if not self.obs_hook.is_obs_setup():
-                        self.window['obs_setup'].update(visible=True)
-                        self.window['controls'].update(visible=False)
-                    else:
-                        self.window['obs_setup'].update(visible=False)
-                        self.window['controls'].update(visible=True)
-                        self.window['scene_setup'].update(self.obs_hook.get_scene())
+                    self.window['obs_setup'].update(visible=False)
+                    self.window['controls'].update(visible=True)
+                    self.window['scene_setup'].update(self.obs_hook.get_scene())
             elif event == 'stop_webserver':
                 if self.obs_hook is not None:
                     self.stop_obs_server()
@@ -561,7 +561,7 @@ class GUI:
             print('Credentials validated...')
             self.update_current_layout('Main')
         except InvalidCredentialsError:
-            # sg.popup("Invalid Twitch Chat credentials found. Go yell at thundercookie15 to send you new ones.")
+            sg.popup("Invalid Twitch Chat credentials found. Go yell at thundercookie15 to send you new ones.")
             self.update_current_layout('Login')
             return False
 
