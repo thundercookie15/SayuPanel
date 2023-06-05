@@ -115,10 +115,10 @@ def controls_layout():
         [sg.Frame(title='Image Controls', layout=[
             [sg.Button('Show Image', font="Helvetica", key='set_visible', button_color=('white', 'green'), ),
              sg.Button('Hide Image', font="Helvetica", key='set_invisible', button_color=('white', 'red'), )],
-            [sg.Text('Choose an image: '), sg.Input(size=30),
-             sg.FileBrowse(key='-FILEIN-', file_types=allowed_file_types,
-                           initial_folder='userinterface/images'), ],
-            [sg.Button('Upload', key='upload_image')],
+            [sg.Text('Enter image URL: '),
+             sg.InputText(key='-FILEIN-', size=(20, 1)), ],
+            [sg.Button('Upload', key='upload_image'),
+             sg.Button('Clear Image', key='clear_image', button_color=('white', 'red'), )],
         ], element_justification='center', title_location='n')],
         [sg.Frame(title='Poll Controls', layout=[
             [sg.Text('Poll Status: ', font=("Helvatica", 15), key='poll_status'),
@@ -426,6 +426,8 @@ class GUI:
                     self.obs_hook.set_scene_visibity(False, self.obs_hook.poll_source_name)
             elif event == 'upload_image':
                 self.obs_hook.set_image(values['-FILEIN-'])
+            elif event == 'clear_image':
+                self.obs_hook.set_image('')
             elif event == 'enable_poll':
                 self.obs_hook.enable_poll()
             elif event == 'disable_poll':
