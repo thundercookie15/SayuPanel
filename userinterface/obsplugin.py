@@ -36,7 +36,7 @@ class ObsSocket:
         print('Setting up OBS')
         self.scene = scene_name
         self.client.call(
-            requests.CreateInput(sceneName=scene_name, inputName=self.image_source_name, inputKind='image_source'))
+            requests.CreateInput(sceneName=scene_name, inputName=self.image_source_name, inputKind='browser_source', inputSettings={'url': ''}))
         self.client.call(
             requests.CreateInput(sceneName=scene_name, inputName=self.poll_source_name, inputKind='browser_source',
                                  inputSettings=image_input_settings(twitch_name)))
@@ -46,13 +46,15 @@ class ObsSocket:
         self.client.call(requests.SetSceneItemIndex(sceneName=scene_name, sceneItemId=finished_id, sceneItemIndex=0))
         self.client.call(
             requests.SetSceneItemLocked(sceneName=scene_name, sceneItemId=finished_id, sceneItemLocked=True))
+        # # Makes the OBS browser source for images invisible, so it doesn't show the ugly default on screen.
+        # self.set_scene_visibity(False, self.image_source_name)
 
     def test_function(self):
         x = requests.post
 
-    def set_image(self, image_path):
+    def set_image(self, image_url):
         self.client.call(
-            requests.SetInputSettings(inputName=self.image_source_name, inputSettings={'file': image_path}))
+            requests.SetInputSettings(inputName=self.image_source_name, inputSettings={'url': image_url}))
 
     def create_source(self, setup_scene):
         self.scene = setup_scene
