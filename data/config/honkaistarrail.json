@@ -1,0 +1,50 @@
+{
+  "$schema": "../schema/config_schema.json",
+  "config_name": "Honkai Star Rail",
+  "events": {
+    "file_events": {
+      "enabled": true
+    },
+    "hotkeys": {
+      "failsafe": "Shift+Backspace"
+    }
+  },
+  "operators": [
+    "$broadcaster",
+    "thundercookie15"
+  ],
+  "irc": {
+    "host": "irc.chat.twitch.tv",
+    "port": 6667,
+    "message_interval": 1
+  },
+  "sessionlog": {
+    "enable_chatlog": true,
+    "enable_consolelog": true
+  },
+  "teams": [
+    {
+      "type": "Default",
+      "name": "Chat",
+      "queue_length": 10,
+      "hidden": false,
+      "use_random_inputs": false,
+      "channels": [
+        "thundercookie15",
+        "sayu"
+      ],
+      "actionset": {
+        "type": "HSR_GP",
+        "action_prefix": "+",
+        "player_index": 0,
+        "macro_file": "macros/honkaistarrail.json",
+        "persistent_macros": true,
+        "allow_changing_macros": true,
+        "input_server": {
+          "type": "remote",
+          "port": 33000
+        }
+      }
+    }
+  ]
+}
