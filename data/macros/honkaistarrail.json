@@ -1,0 +1,70 @@
+{
+  "$schema": "../schema/macro_schema.json",
+  "name": "Honkai Star Rail Macros",
+  "macros": {
+    "ult1": [
+      {
+        "key": "target_right",
+        "delay": 0,
+        "duration": 50,
+        "min_time": 1,
+        "max_time": 100
+      },
+      {
+        "key": "basic",
+        "delay": 0,
+        "duration": 50,
+        "min_time": 1,
+        "max_time": 100
+      }
+    ],
+    "ult2": [
+      {
+        "key": "target_left",
+        "delay": 0,
+        "duration": 50,
+        "min_time": 1,
+        "max_time": 100
+      },
+      {
+        "key": "skill",
+        "delay": 0,
+        "duration": 50,
+        "min_time": 1,
+        "max_time": 100
+      }
+    ],
+    "ult3": [
+      {
+        "key": "target_right",
+        "delay": 0,
+        "duration": 50,
+        "min_time": 1,
+        "max_time": 100
+      },
+      {
+        "key": "cast",
+        "delay": 0,
+        "duration": 50,
+        "min_time": 1,
+        "max_time": 100
+      }
+    ],
+    "ult4": [
+      {
+        "key": "target_left",
+        "delay": 0,
+        "duration": 50,
+        "min_time": 1,
+        "max_time": 100
+      },
+      {
+        "key": "b",
+        "delay": 0,
+        "duration": 50,
+        "min_time": 1,
+        "max_time": 100
+      }
+    ]
+  }
+}

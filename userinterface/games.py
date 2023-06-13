@@ -8,11 +8,13 @@ GAME_GTA = {'name': 'Grand Theft Auto V', 'config': 'data/config/gta_remote.json
 GAME_JUMPKING = {'name': 'Jump King', 'config': 'data/config/JumpKing_remote.json'}
 '''Game folder for Stick Fight'''
 GAME_STICKFIGHT = {'name': 'Stick Fight', 'config': 'data/config/StickFight_GP2_localremote.json'}
+'''Game folder for Honkai Star Rail'''
+GAME_HSR = {'name': 'Honkai Star Rail', 'config': 'data/config/honkaistarrail.json'}
 
 
 def get_games():
     """Returns a list of all games"""
-    return [GAME_DIVEKICK, GAME_DUCKGAME, GAME_GTA, GAME_JUMPKING, GAME_STICKFIGHT]
+    return [GAME_DIVEKICK, GAME_DUCKGAME, GAME_GTA, GAME_HSR, GAME_JUMPKING, GAME_STICKFIGHT]
 
 
 def get_game_names():
