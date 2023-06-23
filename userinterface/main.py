@@ -51,7 +51,8 @@ def main_layout():
                            sg.Button('Stream Chat Wars', font="Helvetica", key='stream_chat_wars',
                                      button_color=('white', 'gold'),
                                      border_width=3)],
-                          [sg.Button('Reset credentials', font="Helvetica", key='reset_credentials', button_color=('white', 'red'), border_width=3)],
+                          [sg.Button('Reset credentials', font="Helvetica", key='reset_credentials',
+                                     button_color=('white', 'red'), border_width=3)],
                       ])],
             [sg.Button('Exit', font="Helvetica", key='Exit', button_color=('white', 'red'),
                        border_width=3)]
