@@ -9,8 +9,8 @@ all of which are starting with `+`.
 
 | Command(s)      | Result                                |
 |-----------------|---------------------------------------|
-| `+basic`        | Use the basic attack                  |
-| `+skill`        | Use the skill attack                  |
+| `+basic`        | Use the characters basic attack       |
+| `+skill`        | Use the characters skill attack       |
 | `+target_left`  | Swap target to left                   |
 | `+target_right` | Swap target to right                  |
 | `+ult1`         | Casts the ult of the first character  |

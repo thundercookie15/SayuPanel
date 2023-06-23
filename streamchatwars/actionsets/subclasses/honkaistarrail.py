@@ -85,12 +85,12 @@ class HSR_KB_Actionset(Keyboard_Actionset):
     name: ClassVar[str] = 'Honkai Star Rail (Keyboard)'
 
     key_dict: ClassVar[dict[str, Sequence[str]]] = {
-        'cast': ('space', 'space'),
-        'swap_basic': ('q', 'q'),
-        'swap_skill': ('e', 'e'),
-        'target_left': ('a', 'a'),
-        'target_right': ('d', 'd'),
-        'select_ult1': ('1', '1'),
+        'cast': ('space',),
+        'swap_basic': ('q',),
+        'swap_skill': ('e',),
+        'target_left': ('a',),
+        'target_right': ('d',),
+        'select_ult1': ('1',),
         'select_ult2': ('2', '2'),
         'select_ult3': ('3', '3'),
         'select_ult4': ('4', '4'),
