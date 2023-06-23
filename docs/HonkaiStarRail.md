@@ -9,9 +9,8 @@ all of which are starting with `+`.
 
 | Command(s)      | Result                                |
 |-----------------|---------------------------------------|
-| `+cast`         | Cast the ability                      |
-| `+basic`        | Swap to basic ability                 |
-| `+skill`        | Swap to skill ability                 |
+| `+basic`        | Use the basic attack                  |
+| `+skill`        | Use the skill attack                  |
 | `+target_left`  | Swap target to left                   |
 | `+target_right` | Swap target to right                  |
 | `+ult1`         | Casts the ult of the first character  |

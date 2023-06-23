@@ -30,8 +30,8 @@ class HSR_GP_Actionset(Gamepad_Actionset):
     '''
 
     key_dict: ClassVar[dict[str, str]] = {
-        'basic': 'x',
-        'skill': 'y',
+        'swap_basic': 'x',
+        'swap_skill': 'y',
         'cast': 'a',
         'target_left': 'lt',
         'target_right': 'rt',
@@ -67,8 +67,8 @@ def _build_verb_dict(action_prefix: str) -> dict[str, list[VerbParamDict]]:
 
     verb_dict: dict[str, list[VerbParamDict]] = {
         'cast': [verb_param(key='cast', duration=50)],
-        'basic': [verb_param(key='basic', duration=50)],
-        'skill': [verb_param(key='skill', duration=50)],
+        'swap_basic': [verb_param(key='swap_basic', duration=50)],
+        'swap_skill': [verb_param(key='swap_skill', duration=50)],
         'target_right': [verb_param(key='target_right', duration=50)],
         'b': [verb_param(key='b_button', duration=50)],
     }
