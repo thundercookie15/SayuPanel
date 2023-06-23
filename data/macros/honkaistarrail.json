@@ -8,94 +8,106 @@
         "delay": 0,
         "duration": 50,
         "min_time": 1,
-        "max_time": 100
+        "max_time": 100,
+        "input_type": 1
       },
       {
         "key": "cast",
-        "delay": 100,
-        "duration": 50,
+        "delay": 500,
+        "duration": 250,
         "min_time": 1,
-        "max_time": 100
+        "max_time": 1000,
+        "input_type": 1
       }
     ],
     "skill": [
       {
-        "key": "skill",
+        "key": "swap_skill",
         "delay": 0,
         "duration": 50,
         "min_time": 1,
-        "max_time": 100
+        "max_time": 1000,
+        "input_type": 1
       },
       {
         "key": "cast",
-        "delay": 100,
-        "duration": 50,
+        "delay": 500,
+        "duration": 250,
         "min_time": 1,
-        "max_time": 100
+        "max_time": 1000,
+        "input_type": 1
       }
     ],
     "ult1": [
       {
-        "key": "target_right",
+        "key": "select_ult1",
         "delay": 0,
         "duration": 50,
         "min_time": 1,
-        "max_time": 100
+        "max_time": 1000,
+        "input_type": 1
       },
       {
-        "key": "basic",
-        "delay": 0,
-        "duration": 50,
+        "key": "cast",
+        "delay": 2000,
+        "duration": 250,
         "min_time": 1,
-        "max_time": 100
+        "max_time": 1000,
+        "input_type": 1
       }
     ],
     "ult2": [
       {
-        "key": "target_left",
+        "key": "select_ult2",
         "delay": 0,
         "duration": 50,
         "min_time": 1,
-        "max_time": 100
+        "max_time": 1000,
+        "input_type": 1
       },
       {
-        "key": "skill",
-        "delay": 0,
-        "duration": 50,
+        "key": "cast",
+        "delay": 2000,
+        "duration": 250,
         "min_time": 1,
-        "max_time": 100
+        "max_time": 1000,
+        "input_type": 1
       }
     ],
     "ult3": [
       {
-        "key": "target_right",
+        "key": "select_ult3",
         "delay": 0,
         "duration": 50,
         "min_time": 1,
-        "max_time": 100
+        "max_time": 1000,
+        "input_type": 1
       },
       {
         "key": "cast",
-        "delay": 0,
-        "duration": 50,
+        "delay": 2000,
+        "duration": 250,
         "min_time": 1,
-        "max_time": 100
+        "max_time": 1000,
+        "input_type": 1
       }
     ],
     "ult4": [
       {
-        "key": "target_left",
+        "key": "select_ult4",
         "delay": 0,
         "duration": 50,
         "min_time": 1,
-        "max_time": 100
+        "max_time": 1000,
+        "input_type": 1
       },
       {
-        "key": "b",
-        "delay": 0,
-        "duration": 50,
+        "key": "cast",
+        "delay": 2000,
+        "duration": 250,
         "min_time": 1,
-        "max_time": 100
+        "max_time": 1000,
+        "input_type": 1
       }
     ]
   }
