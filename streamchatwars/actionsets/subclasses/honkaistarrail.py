@@ -65,7 +65,7 @@ def _build_verb_dict(action_prefix: str) -> dict[str, list[VerbParamDict]]:
         input_type=INPUT_TYPE.PRESS_KEY
     )
 
-    verb_dict = dict[str, list[VerbParamDict]] = {
+    verb_dict: dict[str, list[VerbParamDict]] = {
         'cast': [verb_param(key='cast', duration=50)],
         'basic': [verb_param(key='basic', duration=50)],
         'skill': [verb_param(key='skill', duration=50)],

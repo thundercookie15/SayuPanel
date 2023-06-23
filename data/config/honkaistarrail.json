@@ -15,8 +15,8 @@
   ],
   "irc": {
     "host": "irc.chat.twitch.tv",
-    "port": 6667,
-    "message_interval": 1
+    "port": 6697,
+    "message_interval": 5
   },
   "sessionlog": {
     "enable_chatlog": true,
@@ -36,8 +36,9 @@
       "actionset": {
         "type": "HSR_GP",
         "action_prefix": "+",
+        "doc_url": "https://gist.github.com/thundercookie15/e90fe1d1eccd4d5089521a3434d8ade6",
         "player_index": 0,
-        "macro_file": "macros/honkaistarrail.json",
+        "macro_file": "data/macros/honkaistarrail.json",
         "persistent_macros": true,
         "allow_changing_macros": true,
         "input_server": {
