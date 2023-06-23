@@ -6,7 +6,8 @@
       "enabled": true
     },
     "hotkeys": {
-      "failsafe": "Shift+Backspace"
+      "failsafe": "Shift+Backspace",
+      "accept_input": "Shift+]"
     }
   },
   "operators": [
