@@ -11,6 +11,7 @@ import PySimpleGUI as sg
 import psutil
 import pydirectinput
 from jsonschema import ValidationError
+from pyuac import main_requires_admin
 
 from streamchatwars._shared.constants import RANDOM_ACTIONS_FILE, ACCEPT_INPUT_FILE, DEFAULT_CREDENTIAL_FILE
 from streamchatwars._shared.global_data import GlobalData
@@ -25,6 +26,7 @@ allowed_file_types = (("Image Files", "*.png"), ("Image Files", "*.jpg"), ("Imag
                       ("Image Files", "*.webp"), ("Image Files", "*.gif"))
 
 
+@main_requires_admin
 def main():
     check_image_file()
     this = GUI()

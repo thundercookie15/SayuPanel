@@ -34,7 +34,7 @@
         "sayu"
       ],
       "actionset": {
-        "type": "HSR_GP",
+        "type": "HSR_KB",
         "action_prefix": "+",
         "doc_url": "https://gist.github.com/thundercookie15/e90fe1d1eccd4d5089521a3434d8ade6",
         "player_index": 0,
@@ -43,7 +43,7 @@
         "allow_changing_macros": true,
         "input_server": {
           "type": "remote",
-          "port": 33000
+          "port": 33001
         }
       }
     }

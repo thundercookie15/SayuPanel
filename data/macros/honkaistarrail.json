@@ -6,97 +6,97 @@
       {
         "key": "swap_basic",
         "delay": 0,
-        "duration": 50,
+        "duration": 250,
         "min_time": 1,
         "max_time": 100
       },
       {
         "key": "cast",
         "delay": 100,
-        "duration": 50,
+        "duration": 250,
         "min_time": 1,
-        "max_time": 100
+        "max_time": 1000
       }
     ],
     "skill": [
       {
-        "key": "skill",
+        "key": "swap_skill",
         "delay": 0,
-        "duration": 50,
+        "duration": 250,
         "min_time": 1,
-        "max_time": 100
+        "max_time": 1000
       },
       {
         "key": "cast",
         "delay": 100,
-        "duration": 50,
+        "duration": 250,
         "min_time": 1,
-        "max_time": 100
+        "max_time": 1000
       }
     ],
     "ult1": [
       {
-        "key": "target_right",
+        "key": "1",
         "delay": 0,
-        "duration": 50,
+        "duration": 250,
         "min_time": 1,
-        "max_time": 100
-      },
-      {
-        "key": "basic",
-        "delay": 0,
-        "duration": 50,
-        "min_time": 1,
-        "max_time": 100
-      }
-    ],
-    "ult2": [
-      {
-        "key": "target_left",
-        "delay": 0,
-        "duration": 50,
-        "min_time": 1,
-        "max_time": 100
-      },
-      {
-        "key": "skill",
-        "delay": 0,
-        "duration": 50,
-        "min_time": 1,
-        "max_time": 100
-      }
-    ],
-    "ult3": [
-      {
-        "key": "target_right",
-        "delay": 0,
-        "duration": 50,
-        "min_time": 1,
-        "max_time": 100
+        "max_time": 1000
       },
       {
         "key": "cast",
         "delay": 0,
-        "duration": 50,
+        "duration": 250,
         "min_time": 1,
-        "max_time": 100
+        "max_time": 1000
       }
     ],
-    "ult4": [
+    "ult2": [
       {
-        "key": "target_left",
+        "key": "2",
         "delay": 0,
-        "duration": 50,
+        "duration": 250,
         "min_time": 1,
-        "max_time": 100
+        "max_time": 1000
       },
       {
-        "key": "b",
+        "key": "skill",
         "delay": 0,
-        "duration": 50,
+        "duration": 250,
         "min_time": 1,
-        "max_time": 100
+        "max_time": 1000
       }
+    ],
+    "ult3": [
+      {
+        "key": "3",
+        "delay": 0,
+        "duration": 250,
+        "min_time": 1,
+        "max_time": 1000
+      },
+      {
+        "key": "cast",
+        "delay": 0,
+        "duration": 250,
+        "min_time": 1,
+        "max_time": 1000
+      }
+    ],
+    "ult4":[
+        {
+            "key": "4",
+            "delay": 0,
+            "duration": 250,
+            "min_time": 1,
+            "max_time": 1000
+        },
+        {
+            "key": "cast",
+            "delay": 0,
+            "duration": 250,
+            "min_time": 1,
+            "max_time": 1000
+        }
     ]
   }
 }
