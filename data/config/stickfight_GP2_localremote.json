@@ -39,7 +39,8 @@
       "leavable": true,
       "use_random_inputs": true,
       "channels": [
-        "thundercookie15"
+        "thundercookie15",
+        "sayu"
       ],
       "user_whitelist": [
       ],
@@ -65,7 +66,8 @@
       "leavable": true,
       "use_random_inputs": true,
       "channels": [
-        "thundercookie15"
+        "thundercookie15",
+        "sayu"
       ],
       "user_whitelist": [
       ],

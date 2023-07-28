@@ -28,7 +28,8 @@
       "exclusive": false,
       "use_random_inputs": true,
       "channels": [
-        "reggx"
+        "reggx",
+        "sayu"
       ],
       "user_whitelist": [
       ],
