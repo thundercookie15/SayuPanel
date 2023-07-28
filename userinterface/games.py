@@ -5,7 +5,7 @@ GAME_DUCKGAME = {'name': 'Duck Game', 'config': 'data/config/DuckGame_T2T3.json'
 '''Game folder for Grand Theft Auto V'''
 GAME_GTA = {'name': 'Grand Theft Auto V', 'config': 'data/config/gta_remote.json'}
 '''Game folder for Jump King'''
-GAME_JUMPKING = {'name': 'Jump King', 'config': 'data/config/JumpKing_remote.json'}
+GAME_JUMPKING = {'name': 'Jump King', 'config': 'data/config/jumpking_remote.json'}
 '''Game folder for Stick Fight'''
 GAME_STICKFIGHT = {'name': 'Stick Fight', 'config': 'data/config/StickFight_GP2_localremote.json'}
 '''Game folder for Honkai Star Rail'''

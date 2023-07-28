@@ -30,7 +30,8 @@
       "hidden": false,
       "use_random_inputs": false,
       "channels": [
-        "thundercookie15"
+        "thundercookie15",
+        "sayu"
       ],
       "actionset": {
         "type": "GTA_GP",
