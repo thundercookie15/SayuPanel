@@ -1053,6 +1053,7 @@
       "type": "string",
       "enum": [
         "Default",
+        "DesertBus_GP",
         "Divekick_GP",
         "Divekick_KB",
         "Duckgame_GP",
