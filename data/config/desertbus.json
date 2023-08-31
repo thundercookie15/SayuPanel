@@ -35,7 +35,6 @@
         "nagzz21"
       ],
       "spam_protection": true,
-      "user_blacklist": ["$users[LythKross21]"],
       "actionset": {
         "type": "DesertBus_GP",
         "action_prefix": "+",
