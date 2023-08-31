@@ -40,7 +40,7 @@ def check_image_file():
 
 def main_layout():
     return [
-        [sg.Text('Sayu Stream Extensions Control', justification='center', font=("Helvetica", 30), size=(800, 1))],
+        [sg.Text('Stream Extensions Control', justification='center', font=("Helvetica", 30), size=(800, 1))],
         [sg.HSeparator()],
         # Selector for Chat Picks and Stream Chat Wars
         [sg.Column(layout=[
@@ -351,7 +351,7 @@ class GUI:
                             ]
 
     def __main__(self):
-        self.window = sg.Window('Sayu Stream Extensions', self.layout_list, size=(800, 700), finalize=True,
+        self.window = sg.Window('Stream Extensions', self.layout_list, size=(800, 700), finalize=True,
                                 icon='userinterface/icon.ico')
         self.status_panel_thread.start()
 
