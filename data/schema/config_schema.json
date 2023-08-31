@@ -1053,6 +1053,7 @@
       "type": "string",
       "enum": [
         "Default",
+        "DesertBus_GP",
         "Divekick_GP",
         "Divekick_KB",
         "Duckgame_GP",
@@ -1066,6 +1067,8 @@
         "LethalLeague_GP",
         "LethalLeague_KB",
         "None",
+        "PokemonFireRed_GP",
+        "PokemonFireRed_KB",
         "Splody_GP",
         "Splody_KB",
         "StickFight_GP",

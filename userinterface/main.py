@@ -40,7 +40,7 @@ def check_image_file():
 
 def main_layout():
     return [
-        [sg.Text('Sayu Stream Extensions Control', justification='center', font=("Helvetica", 30), size=(800, 1))],
+        [sg.Text('Stream Extensions Control', justification='center', font=("Helvetica", 30), size=(800, 1))],
         [sg.HSeparator()],
         # Selector for Chat Picks and Stream Chat Wars
         [sg.Column(layout=[
@@ -50,7 +50,7 @@ def main_layout():
                           [sg.Button('Chat Picks', font="Helvetica", key='chat_picks',
                                      button_color=('white', 'gold'),
                                      border_width=3),
-                           sg.Button('Stream Chat Wars', font="Helvetica", key='stream_chat_wars',
+                           sg.Button('Chat Plays', font="Helvetica", key='stream_chat_wars',
                                      button_color=('white', 'gold'),
                                      border_width=3)],
                           [sg.Button('Reset credentials', font="Helvetica", key='reset_credentials',
@@ -138,7 +138,7 @@ def controls_layout():
 
 def stream_chat_wars_layout():
     return [
-        [sg.Text('Stream Chat Wars Control Panel', justification='center', font=("Helvetica", 30), size=(800, 1),
+        [sg.Text('Chat Plays Control Panel', justification='center', font=("Helvetica", 30), size=(800, 1),
                  relief=sg.RELIEF_RIDGE, key='title', text_color='white', background_color='blue', border_width=3)],
         [sg.HSeparator()],
         # Input Server Controls Frame
@@ -159,15 +159,15 @@ def stream_chat_wars_layout():
                 ], justification='center'),
 
                     # Chat Wars Controls Frame
-                    sg.Frame(title='Stream Chat Wars Controls', title_color='orange', relief=sg.RELIEF_SUNKEN,
+                    sg.Frame(title='Chat Plays Controls', title_color='orange', relief=sg.RELIEF_SUNKEN,
                              title_location='n', key='stream_chat_wars_controls', layout=[
                             [sg.Text('Select a game:', font=("Helvetica", 15)),
                              sg.Combo(games.get_game_names(), default_value='none', key='selected_game',
                                       font=("Helvetica", 12), size=(18, 1))],
-                            [sg.Button('Start Stream Chat Wars', font="Helvetica", key='start_stream_chat_wars',
+                            [sg.Button('Start Chat plays', font="Helvetica", key='start_stream_chat_wars',
                                        button_color=('white', 'green'),
                                        border_width=3)],
-                            [sg.Button('Stop Stream Chat Wars', font="Helvetica", key='stop_stream_chat_wars',
+                            [sg.Button('Stop Chat Plays', font="Helvetica", key='stop_stream_chat_wars',
                                        button_color=('white', 'red'),
                                        border_width=3)]
                         ], element_justification='center')
@@ -209,7 +209,7 @@ def stream_chat_wars_layout():
                                  [sg.Text('Input Server Status:', font=("Helvetica", 15)),
                                   sg.Text('Off', key='input_status', text_color='red')],
                                  # Stream Chat Wars Status
-                                 [sg.Text('Stream Chat Wars Status:', font=("Helvetica", 15)),
+                                 [sg.Text('Chat Plays Status:', font=("Helvetica", 15)),
                                   sg.Text('Off', key='stream_chat_wars_status', text_color='red')],
                                  # Chat Input Status
                                  [sg.Text('Chat Input:', font=("Helvetica", 15)),
@@ -351,7 +351,7 @@ class GUI:
                             ]
 
     def __main__(self):
-        self.window = sg.Window('Sayu Stream Extensions', self.layout_list, size=(800, 700), finalize=True,
+        self.window = sg.Window('Stream Extensions', self.layout_list, size=(800, 700), finalize=True,
                                 icon='userinterface/icon.ico')
         self.status_panel_thread.start()
 
@@ -497,6 +497,9 @@ class GUI:
                     self.stream_chat_wars_process = subprocess.Popen(
                         ['python', '-m', 'streamchatwars', selected_config],
                         stdin=subprocess.PIPE)
+
+                    if game == 'Pokemon Fire Red':
+                        os.startfile("D:\\visualboyadvance-m-Win-x86_64\\Pokemon_FireRed.gba")
                 else:
                     sg.popup('Please select a game to run the Chat Wars for.')
         else:
