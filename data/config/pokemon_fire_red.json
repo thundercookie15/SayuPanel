@@ -6,7 +6,7 @@
       "enabled": true
     },
     "hotkeys": {
-      "failsafe": "Shift+Backspace",
+      "failsafe": "Shift+Scroll_Lock",
       "accept_input": "Shift+]"
     }
   },
@@ -41,6 +41,7 @@
       "actionset": {
         "type": "PokemonFireRed_GP",
         "action_prefix": "+",
+        "doc_url": "https://gist.github.com/thundercookie15/9a874ac958eaa57dfa1a4cc0b21531bb",
         "player_index": 0,
         "input_server": {
           "type": "remote",
@@ -69,6 +70,7 @@
       "actionset": {
         "type": "PokemonFireRed_KB",
         "action_prefix": "!",
+        "doc_url": "https://gist.github.com/thundercookie15/9a874ac958eaa57dfa1a4cc0b21531bb",
         "player_index": 1,
         "input_server": {
           "type": "remote",

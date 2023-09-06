@@ -501,7 +501,7 @@ class GUI:
                     if game == 'Pokemon Fire Red':
                         os.startfile("D:\\visualboyadvance-m-Win-x86_64\\Pokemon_FireRed.gba")
                 else:
-                    sg.popup('Please select a game to run the Chat Wars for.')
+                    sg.popup('Please select a game to run Chat Plays for.')
         else:
             sg.popup('Please start the Input Server first.')
 
@@ -511,7 +511,7 @@ class GUI:
             subprocess.call('taskkill /F /T /PID ' + str(self.stream_chat_wars_process.pid))
             self.window['stream_chat_wars_status'].update('Stopped', text_color='red')
         else:
-            sg.popup('Stream Chat Wars not started.')
+            sg.popup('Chat Plays not started.')
 
     def update_current_layout(self, layout):
         self.window[f'-COL_{self.current_layout}-'].update(visible=False)
