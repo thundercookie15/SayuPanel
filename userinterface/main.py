@@ -28,14 +28,17 @@ allowed_file_types = (("Image Files", "*.png"), ("Image Files", "*.jpg"), ("Imag
 
 @main_requires_admin
 def main():
-    check_image_file()
+    check_directories()
     this = GUI()
     this.__init__()
 
 
-def check_image_file():
+def check_directories():
     if not os.path.exists('userinterface/images'):
         os.makedirs('userinterface/images')
+    if not os.path.exists('userinterface/pokemon'):
+        os.makedirs('userinterface/pokemon')
+
 
 
 def main_layout():
@@ -499,7 +502,7 @@ class GUI:
                         stdin=subprocess.PIPE)
 
                     if game == 'Pokemon Fire Red':
-                        os.startfile("D:\\visualboyadvance-m-Win-x86_64\\Pokemon_FireRed.gba")
+                        os.startfile("userinterface\\pokemon\\Pokemon_FireRed.gba")
                 else:
                     sg.popup('Please select a game to run Chat Plays for.')
         else:
