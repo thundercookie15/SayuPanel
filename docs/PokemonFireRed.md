@@ -22,6 +22,6 @@ Spamming won't work, as the bot will ignore commands that are sent too fast.
 
 Mods have the ability to save the game using the following command.
 
-| Command(s) | Result        |
-|------------|---------------|
-| `!save`    | Save the game |
+| Command(s)  | Result        |
+|-------------|---------------|
+| `!savegame` | Save the game |
