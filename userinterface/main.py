@@ -501,7 +501,7 @@ class GUI:
                         ['python', '-m', 'streamchatwars', selected_config],
                         stdin=subprocess.PIPE)
 
-                    if game == 'Pokemon Fire Red':
+                    if game == games.GAME_POKEMON_FIRE_RED['name']:
                         os.startfile("userinterface\\pokemon\\Pokemon_FireRed.gba")
                 else:
                     sg.popup('Please select a game to run Chat Plays for.')
