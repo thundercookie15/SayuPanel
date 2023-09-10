@@ -407,6 +407,9 @@ class GUI:
             elif event == 'stop_webserver':
                 if self.obs_hook is not None:
                     self.stop_obs_server()
+            elif event == 'reset_credentials':
+                os.remove(DEFAULT_CREDENTIAL_FILE)
+                self.check_twitch_credentials()
             elif event == 'test_button':
                 if self.obs_hook is not None:
                     self.obs_hook.test_function()
