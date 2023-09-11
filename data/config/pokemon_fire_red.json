@@ -6,7 +6,7 @@
       "enabled": true
     },
     "hotkeys": {
-      "failsafe": "Shift+Scroll_Lock",
+      "failsafe": "Shift+Home",
       "accept_input": "Shift+]"
     }
   },
