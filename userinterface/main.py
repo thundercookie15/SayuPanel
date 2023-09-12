@@ -40,7 +40,6 @@ def check_directories():
         os.makedirs('userinterface/pokemon')
 
 
-
 def main_layout():
     return [
         [sg.Text('Stream Extensions Control', justification='center', font=("Helvetica", 30), size=(800, 1))],
@@ -294,6 +293,16 @@ def is_obs_running():
     return False
 
 
+def is_gba_emulator_running():
+    for proc in psutil.process_iter():
+        try:
+            if proc.name().lower() == 'visualboyadvance-m.exe':
+                return True
+        except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
+            pass
+    return False
+
+
 def check_login_values(values):
     if values['bot_username'] == '':
         return False
@@ -505,7 +514,8 @@ class GUI:
                         stdin=subprocess.PIPE)
 
                     if game == games.GAME_POKEMON_FIRE_RED['name']:
-                        os.startfile("userinterface\\pokemon\\Pokemon_FireRed.gba")
+                        if not is_gba_emulator_running():
+                            os.startfile("userinterface\\pokemon\\Pokemon_FireRed.gba")
                 else:
                     sg.popup('Please select a game to run Chat Plays for.')
         else:
