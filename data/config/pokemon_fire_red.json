@@ -23,7 +23,9 @@
   },
   "sessionlog": {
     "enable_chatlog": true,
-    "enable_consolelog": true
+    "enable_consolelog": true,
+    "enable_periodic_dumps": true,
+    "dumping_interval": 300
   },
   "teams": [
     {
