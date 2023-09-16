@@ -55,6 +55,8 @@ class AbstractTeam(AbstractThreadSupport, ABC):
     action_queue_lock: Lock
     translation_thread: Thread
     execution_thread: Thread
+    cooldown_duration: float
+    per_user_cooldowns: dict[str, float]
 
     # ----------------------------------------------------------------------------
 
@@ -74,6 +76,7 @@ class AbstractTeam(AbstractThreadSupport, ABC):
             user_whitelist: Sequence[str] | None = None,
             user_blacklist: Sequence[str] | None = None,
             spam_protection: bool = True,
+            cooldown_duration: float = 5.0,
             **kwargs: Any  # Additional params only used by specifc subclasses
     ) -> None:
         pass  # pragma: no cover
