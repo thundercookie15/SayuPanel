@@ -8,6 +8,8 @@ from collections.abc import Sequence
 from functools import wraps
 from typing import Literal
 
+from streamchatwars.teams.team import Team
+
 from .chatmsg import ChatMessage
 # internal imports
 from .._interfaces._team import AbstractTeam
@@ -1124,6 +1126,48 @@ def cmd_loadSnapshot(msg: ChatMessage) -> None:
 # ==================================================================================================
 
 
+# ========== Operator Command: ChangeCooldown ======================================================
+@operator_command
+def cmd_changeCooldown(msg: ChatMessage) -> None:
+    '''
+    Change the per user cooldown for every team.
+    '''
+    # ### Pre-execution checks ###
+    if msg.parent is None:
+        # Remove the None part of msg.parent's typing
+        raise ValueError('ChatMessage object has no reference to Bot!')
+    args: Sequence[str] = (
+        GlobalData.Prefix.Command.split_message(msg, maxsplit=1)
+    )
+    if len(args) < 2:
+        msg.parent.send_priority_message(
+            msg.channel,
+            f"@{msg.user}, this command needs ONE parameter: "
+            "<cooldown_duration>"
+        )
+        return
+    try:
+        cooldown_duration: float = float(args[1])
+    except ValueError:
+        msg.parent.send_priority_message(
+            msg.channel,
+            f"@{msg.user}, invalid cooldown duration! "
+            "Please specify a number in seconds, use dot for decimals!"
+        )
+        return
+    # ### Execution ###
+    for team in GlobalData.Teams.get_all_teams():
+        team.cooldown_duration = cooldown_duration
+    # ### Post-execution feedback ###
+    msg.parent.send_priority_message(
+        msg.channel,
+        f"@{msg.user}, changed cooldown duration to {cooldown_duration} seconds"
+    )
+
+
+# ==================================================================================================
+
+
 # ********** Delegation function *******************************************************************
 def handle_command(msg: ChatMessage) -> None:
     '''
@@ -1215,6 +1259,7 @@ _raw_cmd2func_lookup_dict: dict[str, Callable[[ChatMessage], None]] = {
     'reloadallmacros': cmd_reloadAllMacros,
     'savesnapshot': cmd_saveSnapshot,
     "loadsnapshot": cmd_loadSnapshot,
+    "changecooldown": cmd_changeCooldown,
 }
 '''
 Dictionary for translating the message string to a callable function.
