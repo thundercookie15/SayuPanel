@@ -3,7 +3,8 @@
 ## Controls
 
 Controlling the game is done through chat commands, all of which are starting with `+`. \
-Spamming won't work, as the bot will ignore commands that are sent too fast.
+Spamming won't work, as the bot will ignore commands that are sent too fast. \
+There is a 5-second cooldown for each person when you send a command.
 
 ### Commands
 
@@ -22,6 +23,7 @@ Spamming won't work, as the bot will ignore commands that are sent too fast.
 
 Mods have the ability to save the game using the following command.
 
-| Command(s)  | Result        |
-|-------------|---------------|
-| `!savegame` | Save the game |
+| Command(s)                  | Result                                             |
+|-----------------------------|----------------------------------------------------|
+| `!savegame`                 | Save the game                                      |
+| `?changecooldown <seconds>` | Change the cooldown between commands. (Default: 5) |

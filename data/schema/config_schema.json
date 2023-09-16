@@ -1130,7 +1130,8 @@
         "reloadmacros",
         "reloadallmacros",
         "savesnapshot",
-        "loadsnapshot"
+        "loadsnapshot",
+        "changecooldown"
       ]
     },
     "input_server_def": {
