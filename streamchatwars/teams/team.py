@@ -11,6 +11,7 @@ from functools import partial
 from threading import Lock
 from threading import Thread
 from time import sleep
+from time import time
 from typing import Any
 
 # internal imports
@@ -56,6 +57,8 @@ class Team(AbstractTeam):
     action_queue_lock: Lock
     translation_thread: Thread
     execution_thread: Thread
+    cooldown_duration: float
+    per_user_cooldowns: dict[str, float]
 
     # ----------------------------------------------------------------------------
 
@@ -74,6 +77,7 @@ class Team(AbstractTeam):
             user_whitelist: Sequence[str] | None = None,
             user_blacklist: Sequence[str] | None = None,
             spam_protection: bool = True,
+            cooldown_duration: float = 5.0,
             **kwargs: Any  # Additional params only used by specifc subclasses
     ) -> None:
         '''
@@ -107,6 +111,9 @@ class Team(AbstractTeam):
             for entry in user_blacklist:
                 self.user_blacklist.add_to_list(entry, self.channels)
 
+        self.cooldown_duration = cooldown_duration
+        self.per_user_cooldowns = {}
+
         self.members = set()
         self.keep_running = True
 
@@ -132,6 +139,10 @@ class Team(AbstractTeam):
                     ):
                         # don't add message if it's spammed by the same user
                         return
+                # don't add message if the same users keep spamming it
+                cooldown = self.per_user_cooldowns.get(msg.user, 0)
+                if time() < cooldown:
+                    return
             self.message_queue.append(msg)
         if self.exclusive and msg.user not in self.members:
             self.members.add(msg.user)
@@ -320,6 +331,7 @@ class Team(AbstractTeam):
                     f"{msg.user} [{self.name}|{self.actionset.name}|"
                     f"{self.actionset.player_index}]: {msg.message.lower()}"
                 )
+                self.per_user_cooldowns[msg.user] = time() + self.cooldown_duration
                 GlobalData.Session.Chat.log_executed_message(msg, self)
                 # discard rest of queue after we got a valid function
                 self.action_queue.clear()
