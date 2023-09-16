@@ -4,7 +4,7 @@
 
 Controlling the game is done through chat commands, all of which are starting with `+`. \
 Spamming won't work, as the bot will ignore commands that are sent too fast. \
-There is a 5-second cooldown between sending commands.
+There is a 5-second cooldown for each person when you send a command.
 
 ### Commands
 
