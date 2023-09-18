@@ -36,6 +36,8 @@ class Actionset(AbstractActionset):
     macro_file: Path | None
     persistent_macros: bool
     input_server: AbstractInputServer
+    verb_dict: dict[str, list[VerbParamDict]]
+    macro_dict: dict[str, list[VerbParamDict]]
 
     # ----------------------------------------------------------------------------
 

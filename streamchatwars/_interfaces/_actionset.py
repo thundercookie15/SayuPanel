@@ -36,6 +36,8 @@ class AbstractActionset(ABC):
     action_prefix: str
     player_index: int
     input_server: AbstractInputServer
+    verb_dict: dict[str, list[VerbParamDict]]
+    macro_dict: dict[str, list[VerbParamDict]]
 
     # ----------------------------------------------------------------------------
 
