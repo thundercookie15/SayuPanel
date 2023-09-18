@@ -516,6 +516,9 @@ class GUI:
                     if game == games.GAME_POKEMON_FIRE_RED['name']:
                         if not is_gba_emulator_running():
                             os.startfile("userinterface\\pokemon\\Pokemon_FireRed.gba")
+                    if game == games.GAME_POKEMON_EMERALD['name']:
+                        if not is_gba_emulator_running():
+                            os.startfile("userinterface\\pokemon\\Pokemon_Emerald.GBA")
                 else:
                     sg.popup('Please select a game to run Chat Plays for.')
         else:
