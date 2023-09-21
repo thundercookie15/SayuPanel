@@ -1168,6 +1168,50 @@ def cmd_changeCooldown(msg: ChatMessage) -> None:
 # ==================================================================================================
 
 
+# ========== Operator Command: ChangeMaxTime =======================================================
+@operator_command
+def cmd_changeMaxTime(msg: ChatMessage) -> None:
+    '''
+    Change the maximum allowed time per verb for every team.
+    '''
+    # ### Pre-execution checks ###
+    if msg.parent is None:
+        # Remove the None part of msg.parent's typing
+        raise ValueError('ChatMessage object has no reference to Bot!')
+    args: Sequence[str] = (
+        GlobalData.Prefix.Command.split_message(msg, maxsplit=1)
+    )
+    if len(args) < 2:
+        msg.parent.send_priority_message(
+            msg.channel,
+            f"@{msg.user}, this command needs ONE parameter: "
+            "<max_time (in milliseconds)>"
+        )
+        return
+    try:
+        new_max_time: int = int(args[1])
+    except ValueError:
+        msg.parent.send_priority_message(
+            msg.channel,
+            f"@{msg.user}, invalid max time value! "
+            "Please specify an integer in milliseconds!"
+        )
+        return
+    # ### Execution ###
+    for team in GlobalData.Teams.get_all_teams():
+        for verb_list in team.actionset.verb_dict.values():
+            for verb in verb_list:
+                verb["max_time"] = new_max_time
+    # ### Post-execution feedback ###
+    msg.parent.send_priority_message(
+        msg.channel,
+        f"@{msg.user}, changed max command time duration to {new_max_time} seconds"
+    )
+
+
+# ==================================================================================================
+
+
 # ********** Delegation function *******************************************************************
 def handle_command(msg: ChatMessage) -> None:
     '''
@@ -1260,6 +1304,7 @@ _raw_cmd2func_lookup_dict: dict[str, Callable[[ChatMessage], None]] = {
     'savesnapshot': cmd_saveSnapshot,
     "loadsnapshot": cmd_loadSnapshot,
     "changecooldown": cmd_changeCooldown,
+    "changemaxtime": cmd_changeMaxTime,
 }
 '''
 Dictionary for translating the message string to a callable function.

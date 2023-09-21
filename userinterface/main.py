@@ -344,6 +344,7 @@ class GUI:
         self.input_server_process = None
         self.stream_chat_wars_started = False
         self.stream_chat_wars_process = None
+        self.saved_config = None
         self.obs_hook = None
         ##########################################################
         sg.theme('DarkAmber')
@@ -507,6 +508,7 @@ class GUI:
                 game = values['selected_game']
                 if game != 'none':
                     selected_config = games.get_selected_game_config(game)
+                    self.saved_config = selected_config
                     self.config, self.credentials = read_json_configs(selected_config)
                     print('Starting Stream Chat Wars for ' + game + '...')
                     self.stream_chat_wars_process = subprocess.Popen(
@@ -516,6 +518,9 @@ class GUI:
                     if game == games.GAME_POKEMON_FIRE_RED['name']:
                         if not is_gba_emulator_running():
                             os.startfile("userinterface\\pokemon\\Pokemon_FireRed.gba")
+                    if game == games.GAME_POKEMON_EMERALD['name']:
+                        if not is_gba_emulator_running():
+                            os.startfile("userinterface\\pokemon\\Pokemon_Emerald.GBA")
                 else:
                     sg.popup('Please select a game to run Chat Plays for.')
         else:
@@ -526,6 +531,7 @@ class GUI:
             print('Stopping Stream Chat Wars...')
             subprocess.call('taskkill /F /T /PID ' + str(self.stream_chat_wars_process.pid))
             self.window['stream_chat_wars_status'].update('Stopped', text_color='red')
+            self.stream_chat_wars_started = False
         else:
             sg.popup('Chat Plays not started.')
 
@@ -537,17 +543,19 @@ class GUI:
     def check_process_state(self):  # Check if the servers are running
         if self.input_server_started:  # Check if the Input Server is running
             if self.input_server_process.poll() is None:
-                print('Input Server is running.')
+                pass
             else:
                 print(self.input_server_process.poll())
-                print('Input Server is not running.')
+                pass
 
         if self.stream_chat_wars_started:  # Check if the Stream Chat Wars is running
             if self.stream_chat_wars_process.poll() is None:
-                print('Stream Chat Wars is running.')
+                pass
             else:
-                print(self.stream_chat_wars_process.poll())
-                print('Stream Chat Wars is not running.')
+                print('# Stream Chat Wars crashed - Attempting to automatically restart')
+                self.stream_chat_wars_process = subprocess.Popen(
+                    ['python', '-m', 'streamchatwars', self.saved_config],
+                    stdin=subprocess.PIPE)
 
     def check_twitch_credentials(self):
         config_arg: str | None = sys.argv[1] if len(sys.argv) > 1 else None
@@ -622,6 +630,7 @@ class GUI:
                             self.window['go_to_scene'].update(visible=False)
                     self.window['scene_text'].update(self.obs_hook.get_current_scene())
             if self.current_layout == 'Stream_Chat_Wars':
+                self.check_process_state()
                 if self.input_server_process is not None:
                     if self.input_server_process.poll() is None:
                         self.input_server_started = True

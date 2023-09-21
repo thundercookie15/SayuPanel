@@ -1067,6 +1067,8 @@
         "LethalLeague_GP",
         "LethalLeague_KB",
         "None",
+        "PokemonEmerald_GP",
+        "PokemonEmerald_KB",
         "PokemonFireRed_GP",
         "PokemonFireRed_KB",
         "Splody_GP",
@@ -1131,7 +1133,8 @@
         "reloadallmacros",
         "savesnapshot",
         "loadsnapshot",
-        "changecooldown"
+        "changecooldown",
+        "changemaxtime"
       ]
     },
     "input_server_def": {
