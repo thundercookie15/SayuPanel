@@ -36,6 +36,7 @@ class PokemonEmerald_KB_Actionset(Keyboard_Actionset):
         'start': ('enter', 'enter'),
         'select': ('backspace', 'backspace'),
         'save': ('f13', 'f13'),
+        'load': ('f1', 'f1')
     }
 
     def __init__(self, doc_url: str = "", **kwargs):
@@ -71,6 +72,7 @@ class PokemonEmerald_GP_Actionset(Gamepad_Actionset):
         'start': 'start',
         'select': 'back',
         'save': 'x',
+        'load': 'y',
     }
 
     def __init__(self, doc_url: str = "", **kwargs):
@@ -97,6 +99,7 @@ def _build_verb_dict(action_prefix: str) -> dict[str, list[VerbParamDict]]:
         'start': [verb_param(key='start')],
         'select': [verb_param(key='select')],
         'savegame': [verb_param(key='save')],
+        'loadgame': [verb_param(key='load')],
     }
 
     vd_aliases: dict[str, str] = {
