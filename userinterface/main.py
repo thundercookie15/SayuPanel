@@ -568,7 +568,8 @@ class GUI:
             sg.popup('Chat Plays not started.')
 
     def restart_chat_plays(self):
-        self.stop_stream_chat_wars_server()
+        if self.stream_chat_wars_started:
+            self.stop_stream_chat_wars_server()
         self.start_stream_chat_wars_server(values={'selected_game': self.saved_game})
 
     def update_current_layout(self, layout):
