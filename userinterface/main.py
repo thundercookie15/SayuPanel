@@ -5,17 +5,31 @@ import os
 import subprocess
 import sys
 import threading
+from collections import deque
+from functools import partial
 from json import JSONDecodeError
+from ssl import SSLContext, create_default_context, SSLSocket
+from time import time, sleep
 
 import PySimpleGUI as sg
 import psutil
 import pydirectinput
+from irc.bot import SingleServerIRCBot
+from irc.client import Reactor, ServerConnection, ServerNotConnectedError, Event
+from irc.connection import Factory
 from jsonschema import ValidationError
 from pyuac import main_requires_admin
 
-from streamchatwars._shared.constants import RANDOM_ACTIONS_FILE, ACCEPT_INPUT_FILE, DEFAULT_CREDENTIAL_FILE
+from streamchatwars._interfaces._chatbot import AbstractMessageSender
+from streamchatwars._interfaces._thread_support import AbstractThreadSupport
+from streamchatwars._shared.constants import RANDOM_ACTIONS_FILE, ACCEPT_INPUT_FILE, DEFAULT_CREDENTIAL_FILE, \
+    CHECK_JOIN_INTERVAL
 from streamchatwars._shared.global_data import GlobalData
+from streamchatwars._shared.helpers_color import ColorText
+from streamchatwars._shared.helpers_print import thread_print_timestamped, thread_print
 from streamchatwars._shared.types import CredentialDict, TwitchChatCredentialDict, ConfigDict
+from streamchatwars.chat.chatbot import Custom_Reactor, StopBotException
+from streamchatwars.chat.chatmsg import ChatMessage
 from streamchatwars.config import json_utils
 from streamchatwars.config.config import read_json_configs, IRC_Settings, extract_irc_settings
 from streamchatwars.config.json_utils import InvalidCredentialsError
@@ -24,6 +38,13 @@ from userinterface import games, obsplugin
 
 allowed_file_types = (("Image Files", "*.png"), ("Image Files", "*.jpg"), ("Image Files", "*.jpeg"),
                       ("Image Files", "*.webp"), ("Image Files", "*.gif"))
+
+mods = ['thundercookie15', 'suitwo', 'reldeththesummoner', 'joshthecarrot', 'ssbcraft', 'lord_df_01', 'a_scarling',
+        'bro0ns', 'meyvol']
+
+channels: set[str] = set()
+
+channels.update(['#thundercookie15', '#nagzz21'])
 
 
 @main_requires_admin
@@ -330,6 +351,7 @@ class GUI:
         """
         Here is the list of layouts that are used in the GUI
         """
+        self.bot = None
         self.status_panel_thread = threading.Thread(target=self.update_status_panel, args=())
         self.status_panel_thread.daemon = True
 
@@ -345,6 +367,7 @@ class GUI:
         self.stream_chat_wars_started = False
         self.stream_chat_wars_process = None
         self.saved_config = None
+        self.saved_game = None
         self.obs_hook = None
         ##########################################################
         sg.theme('DarkAmber')
@@ -509,7 +532,10 @@ class GUI:
                 if game != 'none':
                     selected_config = games.get_selected_game_config(game)
                     self.saved_config = selected_config
+                    self.saved_game = game
                     self.config, self.credentials = read_json_configs(selected_config)
+                    irc_setting: IRC_Settings = extract_irc_settings(self.config, self.credentials.get("TwitchChat"),
+                                                                     channels)
                     print('Starting Stream Chat Wars for ' + game + '...')
                     self.stream_chat_wars_process = subprocess.Popen(
                         ['python', '-m', 'streamchatwars', selected_config],
@@ -518,8 +544,14 @@ class GUI:
                     if game == games.GAME_POKEMON_FIRE_RED['name']:
                         if not is_gba_emulator_running():
                             os.startfile("userinterface\\pokemon\\Pokemon_FireRed.gba")
+                            self.bot: BackupBot = BackupBot(irc_setting, self)
+                            self.bot.create_thread()
+                            self.bot.start_thread()
                     if game == games.GAME_POKEMON_EMERALD['name']:
                         if not is_gba_emulator_running():
+                            self.bot: BackupBot = BackupBot(irc_setting, self)
+                            self.bot.create_thread()
+                            self.bot.start_thread()
                             os.startfile("userinterface\\pokemon\\Pokemon_Emerald.GBA")
                 else:
                     sg.popup('Please select a game to run Chat Plays for.')
@@ -534,6 +566,11 @@ class GUI:
             self.stream_chat_wars_started = False
         else:
             sg.popup('Chat Plays not started.')
+
+    def restart_chat_plays(self):
+        if self.stream_chat_wars_started:
+            self.stop_stream_chat_wars_server()
+        self.start_stream_chat_wars_server(values={'selected_game': self.saved_game})
 
     def update_current_layout(self, layout):
         self.window[f'-COL_{self.current_layout}-'].update(visible=False)
@@ -679,3 +716,344 @@ class GUI:
         self.obs_hook = None
         self.window['obs_setup'].update(visible=False)
         self.window['controls'].update(visible=False)
+
+
+class BackupBot(
+    SingleServerIRCBot,
+    AbstractMessageSender,
+    AbstractThreadSupport
+):
+    reactor_class: type[Custom_Reactor] = Custom_Reactor
+    reactor: Custom_Reactor
+    host: str
+    port: int
+    channel_set: set[str]
+    message_interval: float
+    connection_timeout: float
+    join_rate_limit_amount: int
+    join_rate_limit_time: float
+    last_message_time: float
+    '''Keep track of time when last message was sent to keep within rate-limits'''
+    message_queue: deque[tuple[str, str]]
+    keep_running: bool
+    finished_startup: bool = False
+    message_queue_thread: threading.Thread
+
+    def __init__(self, irc_settings: IRC_Settings, gui) -> None:
+        self.gui = gui
+        server_list: list[tuple[str, int, str]] = [(
+            irc_settings.host,
+            irc_settings.port,
+            irc_settings.oauth_token
+        )]
+
+        self.host = irc_settings.host
+        self.port = irc_settings.port
+
+        nickname: str = irc_settings.username
+        realname: str = irc_settings.username
+
+        self.channel_set = irc_settings.channel_set
+
+        self.message_interval = irc_settings.message_interval
+        self.connection_timeout = irc_settings.connection_timeout
+        self.join_rate_limit_amount = irc_settings.join_rate_limit_amount
+        self.join_rate_limit_time = irc_settings.join_rate_limit_time
+
+        self.last_message_time = 0
+        self.message_queue = deque()
+
+        self.keep_running = True
+
+        self.message_queue_thread = threading.Thread(
+            target=self.handle_message_queue,
+            daemon=True)
+        self.message_queue_thread.start()
+
+        # let base class handle the rest
+        super().__init__(
+            server_list,
+            nickname,
+            realname,
+            connect_factory=self.create_connect_factory()
+        )
+
+    def create_connect_factory(self) -> Factory:
+        '''
+        We only need this to make the connection SSL compatible.
+        Because for some reason nobody thought that SSL connections should be an
+        easy default instead of diving into the code and finding out what needs
+        to be wrapped...
+        '''
+        ssl_context: SSLContext = create_default_context()
+        wrapping_func: partial[SSLSocket] = partial(
+            ssl_context.wrap_socket,
+            server_hostname=self.host
+        )
+        ssl_factory: Factory = Factory(wrapper=wrapping_func)
+        return ssl_factory
+
+    def stop_bot(self) -> None:
+        '''
+        Disconnect from the IRC server and stop all looping operations
+        (including self.reactor), so the bot's thread can be shut down.
+        '''
+        self.keep_running = False
+        while self.message_queue_thread.is_alive():
+            # Wait until sub-thread has shutdown so we're never in the
+            # awkward position of trying to send messages after the connection
+            # to the server has been disconnected.
+            sleep(0.1)
+        self.disconnect("Bye")
+        self.reactor.keep_running = False
+
+    def handle_message_queue(self) -> None:
+        '''
+        Sub-thread function that sends out queued messages when rate limits allow.
+        '''
+        while self.keep_running:
+            try:
+                channel, message = self.message_queue.popleft()
+                # This is kinda hacky, but it gets the job done.
+                # Basically retry sending every 0.1 seconds
+                # until rate limits allow sending and the message is out.
+                while self.keep_running and not self.send_message(channel, message):
+                    sleep(0.1)
+            except IndexError:
+                sleep(0.1)
+
+    def on_disconnect(self, connection: ServerConnection, event: threading.Event) -> None:
+        '''
+        Called when the bot has been disconnected from the server.
+        '''
+        thread_print_timestamped(ColorText.error(
+            f"Disconnected from {self.host}:{self.port}!"
+        ))
+        if not self.finished_startup:
+            # If the bot hasn't finished startup yet, we try an accelerated
+            # reconnection attempt.
+            sleep(1)
+            self.start()
+
+    def join_channels(self, connection: ServerConnection) -> None:
+        '''
+        Join all channels in `self.channel_set` while respecting rate limits
+        set by `self.join_rate_limit_amount` and `self.join_rate_limit_time`.
+
+        Intended to be used in its own thread to prevent rate limit cooldowns
+        stopping event processing for the rest of the bot.
+        '''
+        rate_limit_counter: int = 0
+        join_set: set[str] = set()
+        channel: str
+        for channel in self.channel_set:
+            if rate_limit_counter < self.join_rate_limit_amount:
+                # Collect channels to join in one go a long as rate limit isn't reached
+                join_set.add(channel)
+                rate_limit_counter += 1
+            else:
+                # Rate limit reached: Join the collected channels and reset + wait
+                thread_print(f"Attempting to join channels: {', '.join(join_set)}")
+                for chan in join_set:
+                    if not self.keep_running:  # Safety: don't join in dead connection
+                        self.stop_bot()
+                        return
+                    connection.join(chan)
+                join_set.clear()
+                thread_print(ColorText.warning(
+                    f"Join rate limit reached. Waiting {self.join_rate_limit_time} "
+                    "seconds before attempting further joins."
+                ))
+                sleep(self.join_rate_limit_time)
+                rate_limit_counter = 0
+        # Join remaining channels
+        if join_set:
+            thread_print(f"Attempting to join channels: {', '.join(join_set)}")
+            for chan in join_set:
+                if not self.keep_running:  # Safety: don't join in dead connection
+                    self.stop_bot()
+                    return
+                connection.join(chan)
+
+    def on_join(self, c: ServerConnection, e: Event) -> None:
+        '''
+        IRC Event (executes when users are joining a channel)
+
+        Only used for output to keep user in the loop.
+        '''
+        if str(e.source).split("!")[0] == c.nickname:
+            thread_print(f"Joined channel {e.target}")
+
+    def check_all_joined(self) -> None:
+        '''
+        Cancel the connection attempt if some channels could not be joined.
+
+        Tell the user where the problem lies, so they get a chance to fix
+        possible malformed configuration files.
+        '''
+        time_slept: float = 0
+        missing_channel_set: set[str] = set()
+        while time_slept <= self.connection_timeout:
+            if not self.keep_running:
+                self.stop_bot()
+                return
+        sleep(CHECK_JOIN_INTERVAL)
+        time_slept += CHECK_JOIN_INTERVAL
+        missing_channel_set = self.channel_set - set(self.channels.keys())
+        if len(missing_channel_set) == 0:
+            thread_print(ColorText.good(
+                ">> Joined all channels, you're good to go! <<"
+            ))
+            self.finished_startup = True
+            self.finish_connecting()
+            return
+        thread_print(ColorText.error(
+            "Some channels could not be joined in time: "
+            f"{' '.join(missing_channel_set)}"
+        ))
+        thread_print(ColorText.error("Aborting!"))
+        self.stop_bot()
+        self.abort_connection()
+
+    # ----------------------------------------------------------------------------
+
+    def finish_connecting(self) -> None:
+        '''
+        Entry point for a mock method to test other things that require a
+        server connection or wrap up testing.
+
+        Does nothing in its default implementation by design!
+        '''
+        pass
+
+    def start_and_check(self) -> None:
+        '''
+        Start the bot and establish a connection to the chat server.
+
+        Since the bot operates in a blocking way, check if the
+        connection was successful in another thread.
+        '''
+        self.finished_startup = False
+        threading.Thread(target=self.check_all_joined).start()
+        thread_print(ColorText.warning(
+            f"Attempting connection to {self.host}:{self.port}"
+        ))
+        try:
+            self.start()
+        except ValueError as e:
+            # sometimes start() raises an exception after die() has been called.
+            if e.args[0] != "Read on closed or unwrapped SSL socket.":
+                raise
+        except ServerNotConnectedError:
+            thread_print(ColorText.error("Server Connection lost!"))
+            self.keep_running = False
+            self.reactor.keep_running = False
+            return
+        except StopBotException:
+            thread_print(ColorText.warning("Stopped bot."))
+            return
+        return
+
+    def create_thread(self) -> None:
+        '''
+        Create thread.
+        '''
+        self.thread = threading.Thread(
+            target=self.start_and_check,
+            daemon=True
+        )
+
+    def start_thread(self) -> None:
+        '''
+        Start thread.
+        '''
+        self.thread.start()
+
+    # ----------------------------------------------------------------------------
+
+    def stop_thread(self) -> None:
+        '''
+        Stop thread.
+        '''
+        self.stop_bot()
+
+    def queue_message(self, channel: str, message: str) -> None:
+        '''
+        Send a `message` to the chosen `channel` (when rate limits allow).
+
+        The message could be sent immediately, any time after, or never
+        (if the bot disconnects before the message queue can be emptied).
+        Don't use this function, if you need the message out there immediately!
+        '''
+        self.message_queue.append((channel, message))
+
+    def abort_connection(self) -> None:
+        '''
+        Entry point for a mock method to test naturally failed connection
+        attempts. (It happens sometimes in the real world)
+
+        Does nothing in its default implementation by design!
+        '''
+        pass
+
+    def on_welcome(self, connection: ServerConnection, event: Event) -> None:
+        '''
+        IRC EVENT (executes after successfully establishing a connection
+        to the server)
+
+        Request IRCv3 capabilities and join all relevant channels.
+        '''
+        thread_print_timestamped(
+            f"Connected to {self.host}:{self.port} as user "
+            f"{ColorText.info(connection.username)}, joining channels..."
+        )
+        connection.cap('REQ', ':twitch.tv/membership')
+        connection.cap('REQ', ':twitch.tv/tags')
+        connection.cap('REQ', ':twitch.tv/commands')
+        # outsource joining into an extra thread to have events continue
+        # to be processed while waiting for rate limit delays.
+        threading.Thread(target=self.join_channels, args=[connection], daemon=True).start()
+
+    def on_pubmsg(self, connection: ServerConnection, event: threading.Event) -> None:
+        '''
+        IRC EVENT (executes when a message is sent in a channel)
+
+        Relevant event data is contained in `event` and needs some touch-up
+        before being passed on to the rest of the application.
+        '''
+        msg: ChatMessage = ChatMessage.from_event(event, parent=self)
+        GlobalData.Session.Chat.log_message(msg)
+        if GlobalData.Prefix.Command.message_is_command(msg):
+            if msg.message == '?restartchatplays':
+                if msg.user in mods:
+                    print('Restarting Chat Plays...')
+                    GUI.restart_chat_plays(self.gui)
+
+    def send_message(self, channel: str, message: str) -> bool:
+        '''
+        Send a `message` to the chosen `channel` (if rate limits allow).
+
+        Don't rely on this function to send the message in the first place.
+
+        Return `True` on success, `False` if message hasn't been sent.
+        '''
+        if time() - self.last_message_time > self.message_interval:
+            self.send_priority_message(channel, message)
+            return True
+        return False
+
+        # ----------------------------------------------------------------------------
+
+    def send_priority_message(self, channel: str, message: str) -> None:
+        '''
+        Send a `message` to the chosen `channel` (ignore rate limits).
+
+        This function will ignore any rate limits and just send the message
+        anyways.
+
+        Be cautious, because you are responsible for not getting
+        your bot forcibly disconnected for spamming!
+        '''
+        # ignore last_message_time check
+        self.connection.privmsg(channel, message)
+        self.last_message_time = time()
