@@ -522,6 +522,7 @@ class GUI:
         if self.input_server_started:
             print('Stopping Input Server...')
             subprocess.call(['taskkill', '/F', '/T', '/PID', str(self.input_server_process.pid)])
+            self.input_server_started = False
         else:
             sg.popup('Input Server not started.')
 
@@ -571,6 +572,21 @@ class GUI:
         if self.stream_chat_wars_started:
             self.stop_stream_chat_wars_server()
         self.start_stream_chat_wars_server(values={'selected_game': self.saved_game})
+
+    def restart_input_server(self):
+        if self.input_server_started:
+            self.stop_input_server()
+        self.start_input_server()
+
+    def fix_chat_input_file(self):
+        if os.path.exists(ACCEPT_INPUT_FILE):
+            os.remove(ACCEPT_INPUT_FILE)
+            sleep(2)
+            open(ACCEPT_INPUT_FILE, 'x')
+            return
+        if not os.path.exists(ACCEPT_INPUT_FILE):
+            open(ACCEPT_INPUT_FILE, 'x')
+            return
 
     def update_current_layout(self, layout):
         self.window[f'-COL_{self.current_layout}-'].update(visible=False)
@@ -1028,6 +1044,14 @@ class BackupBot(
                 if msg.user in mods:
                     print('Restarting Chat Plays...')
                     GUI.restart_chat_plays(self.gui)
+            if msg.message == '?restartinputserver':
+                if msg.user in mods:
+                    print('Restarting Input Server...')
+                    GUI.restart_input_server(self.gui)
+            if msg.message == '?fixchatinputfile':
+                if msg.user in mods:
+                    print('Fixing Chat Input File...')
+                    GUI.fix_chat_input_file(self.gui)
 
     def send_message(self, channel: str, message: str) -> bool:
         '''
