@@ -59,6 +59,8 @@ def check_directories():
         os.makedirs('userinterface/images')
     if not os.path.exists('userinterface/pokemon'):
         os.makedirs('userinterface/pokemon')
+    if not os.path.exists('userinterface/SNES'):
+        os.makedirs('userinterface/SNES')
 
 
 def main_layout():
@@ -324,6 +326,16 @@ def is_gba_emulator_running():
     return False
 
 
+def is_snes_emulator_running():
+    for proc in psutil.process_iter():
+        try:
+            if proc.name().lower() == 'emuhawk.exe':
+                return True
+        except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
+            pass
+    return False
+
+
 def check_login_values(values):
     if values['bot_username'] == '':
         return False
@@ -554,6 +566,12 @@ class GUI:
                             self.bot.create_thread()
                             self.bot.start_thread()
                             os.startfile("userinterface\\pokemon\\Pokemon_Emerald.GBA")
+                    if game == games.GAME_EARTHBOUND['name']:
+                        if not is_snes_emulator_running():
+                            self.bot: BackupBot = BackupBot(irc_setting, self)
+                            self.bot.create_thread()
+                            self.bot.start_thread()
+                            os.startfile("userinterface\\SNES\\BizHawk\\ROMS\\Earthbound (USA).sfc")
                 else:
                     sg.popup('Please select a game to run Chat Plays for.')
         else:
