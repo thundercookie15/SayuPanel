@@ -571,7 +571,7 @@ class GUI:
                             self.bot: BackupBot = BackupBot(irc_setting, self)
                             self.bot.create_thread()
                             self.bot.start_thread()
-                            os.startfile("userinterface\\SNES\\BizHawk\\ROMS\\Earthbound (USA).sfc")
+                            os.startfile("userinterface\\SNES\\BizHawk\\EmuHawk.exe")
                 else:
                     sg.popup('Please select a game to run Chat Plays for.')
         else:
@@ -582,6 +582,7 @@ class GUI:
             print('Stopping Stream Chat Wars...')
             subprocess.call('taskkill /F /T /PID ' + str(self.stream_chat_wars_process.pid))
             self.window['stream_chat_wars_status'].update('Stopped', text_color='red')
+            self.bot.stop_thread()
             self.stream_chat_wars_started = False
         else:
             sg.popup('Chat Plays not started.')
