@@ -582,7 +582,6 @@ class GUI:
             print('Stopping Stream Chat Wars...')
             subprocess.call('taskkill /F /T /PID ' + str(self.stream_chat_wars_process.pid))
             self.window['stream_chat_wars_status'].update('Stopped', text_color='red')
-            self.bot.stop_thread()
             self.stream_chat_wars_started = False
         else:
             sg.popup('Chat Plays not started.')
