@@ -23,6 +23,17 @@ There is a 5-second cooldown for each person when you send a command.
 | `+start`         | Press Start        |
 | `+select`        | Press Select       |
 
+### Special Commands
+
+These are special commands that move in 2 directions at once.
+
+| Command(s) | Result              |
+|------------|---------------------|
+| `+ul`      | Move Up and Left    |
+| `+ur`      | Move Up and Right   |
+| `+dl`      | Move Down and Left  |
+| `+dr`      | Move Down and Right |
+
 ### Other commands
 
 Mods have the ability to use a few more commands.
