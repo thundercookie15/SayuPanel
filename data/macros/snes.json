@@ -2,7 +2,7 @@
   "$schema": "../schema/macro_schema.json",
   "name": "SNES Macro's for Earthbound",
   "macros": {
-    "ld": [
+    "dl": [
       {
         "key": "left",
         "delay": 0,
@@ -18,7 +18,7 @@
         "max_time": 500
       }
     ],
-    "rd": [
+    "dr": [
       {
         "key": "right",
         "delay": 0,
@@ -34,7 +34,7 @@
         "max_time": 500
       }
     ],
-    "lu": [
+    "ul": [
       {
         "key": "left",
         "delay": 0,
@@ -50,7 +50,7 @@
         "max_time": 500
       }
     ],
-    "ru": [
+    "ur": [
       {
         "key": "right",
         "delay": 0,
