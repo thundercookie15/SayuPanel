@@ -77,7 +77,7 @@ class Team(AbstractTeam):
             user_whitelist: Sequence[str] | None = None,
             user_blacklist: Sequence[str] | None = None,
             spam_protection: bool = True,
-            cooldown_duration: float = 5.0,
+            cooldown_duration: float = 3.0,
             **kwargs: Any  # Additional params only used by specifc subclasses
     ) -> None:
         '''
