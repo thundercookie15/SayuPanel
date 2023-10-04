@@ -53,7 +53,7 @@ def _build_verb_dict_1(action_prefix: str) -> dict[str, list[VerbParamDict]]:
         duration=100,
         delay=0,
         min_time=1,
-        max_time=100,
+        max_time=500,
         input_type=INPUT_TYPE.PRESS_KEY
     )
 
