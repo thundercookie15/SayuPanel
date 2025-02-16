@@ -84,7 +84,6 @@ def main_layout():
             [sg.Button('Exit', font="Helvetica", key='Exit', button_color=('white', 'red'),
                        border_width=3)]
         ], justification='center', element_justification='center', vertical_alignment='center')],
-
     ]
 
 
