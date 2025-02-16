@@ -44,7 +44,7 @@ mods = ['thundercookie15', 'suitwo', 'reldeththesummoner', 'joshthecarrot', 'ssb
 
 channels: set[str] = set()
 
-channels.update(['#thundercookie15', '#nagzz21'])
+channels.update(['#thundercookie15', '#sayu'])
 
 
 @main_requires_admin
