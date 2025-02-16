@@ -40,7 +40,7 @@
       ],
       "spam_protection": true,
       "actionset": {
-        "type": "PokemonFireRed_GP",
+        "type": "PokemonEmerald_GP",
         "action_prefix": "+",
         "doc_url": "https://gist.github.com/thundercookie15/85db2cb504ea86e6218bc0842d4ab4bc",
         "player_index": 0,
@@ -65,11 +65,10 @@
       "user_whitelist": [
         "$broadcaster",
         "$mods",
-        "reldeththesummoner",
         "thundercookie15"
       ],
       "actionset": {
-        "type": "PokemonFireRed_KB",
+        "type": "PokemonEmerald_KB",
         "action_prefix": "!",
         "doc_url": "https://gist.github.com/thundercookie15/85db2cb504ea86e6218bc0842d4ab4bc",
         "player_index": 0,
