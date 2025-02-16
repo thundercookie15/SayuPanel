@@ -40,7 +40,7 @@ allowed_file_types = (("Image Files", "*.png"), ("Image Files", "*.jpg"), ("Imag
                       ("Image Files", "*.webp"), ("Image Files", "*.gif"))
 
 mods = ['thundercookie15', 'suitwo', 'reldeththesummoner', 'joshthecarrot', 'ssbcraft', 'lord_df_01', 'a_scarling',
-        'bro0ns', 'meyvol', 'unfairballoon7', 'king_o_peace']
+        'bro0ns', 'meyvol', 'unfairballoon7', 'king_o_peace', 'raechit', 'sayu', 'veristelle', 'just_ssam', 'ShinAmamiya', 'ProfDae']
 
 channels: set[str] = set()
 
