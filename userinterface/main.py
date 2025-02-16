@@ -44,7 +44,7 @@ mods = ['thundercookie15', 'suitwo', 'reldeththesummoner', 'joshthecarrot', 'ssb
 
 channels: set[str] = set()
 
-channels.update(['#thundercookie15', '#nagzz21'])
+channels.update(['#thundercookie15', '#sayu'])
 
 
 @main_requires_admin
@@ -84,7 +84,6 @@ def main_layout():
             [sg.Button('Exit', font="Helvetica", key='Exit', button_color=('white', 'red'),
                        border_width=3)]
         ], justification='center', element_justification='center', vertical_alignment='center')],
-
     ]
 
 
@@ -566,6 +565,12 @@ class GUI:
                             self.bot.create_thread()
                             self.bot.start_thread()
                             os.startfile("userinterface\\pokemon\\Pokemon_Emerald.GBA")
+                    if game == games.GAME_POKEMON_SAYU['name']:
+                        if not is_gba_emulator_running():
+                            self.bot: BackupBot = BackupBot(irc_setting, self)
+                            self.bot.create_thread()
+                            self.bot.start_thread()
+                            os.startfile("userinterface\\pokemon\\Pokemon_Emerald_Sayu.gba")
                     if game == games.GAME_EARTHBOUND['name']:
                         if not is_snes_emulator_running():
                             self.bot: BackupBot = BackupBot(irc_setting, self)

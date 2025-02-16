@@ -1,1 +1,8 @@
 /.idea/
+/data/credentials
+**/__pycache__/
+**/pyuac.*
+/userinterface/pokemon
+/userinterface/images
+/userinterface/SNES
+/userinterface/temp_images
