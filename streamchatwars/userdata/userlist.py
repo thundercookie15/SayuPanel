@@ -11,7 +11,11 @@ from collections.abc import Callable
 from re import Pattern
 from re import compile
 from re import escape
+from types import NoneType
 from typing import Final
+
+from git import exc
+from requests import get
 
 # internal imports
 from .._interfaces._chatmsg import AbstractChatMessage
@@ -332,7 +336,10 @@ class UserList(AbstractUserList):
         '''
         Check if any subgroups flag positive for `msg`
         '''
-        return any(is_in_group(msg) for is_in_group in self.subgroup_checks)
+        try:
+            return any(is_in_group(msg) for is_in_group in self.subgroup_checks)
+        except:
+            return False
 
     # ----------------------------------------------------------------------------
 
