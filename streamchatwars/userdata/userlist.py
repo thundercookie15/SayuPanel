@@ -338,7 +338,9 @@ class UserList(AbstractUserList):
         '''
         try:
             return any(is_in_group(msg) for is_in_group in self.subgroup_checks)
-        except:
+        except TypeError as e:
+            print('Error somewhere while checking for message tags')
+            print(e)
             return False
 
     # ----------------------------------------------------------------------------
