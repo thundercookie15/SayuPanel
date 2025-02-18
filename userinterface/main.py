@@ -15,7 +15,7 @@ import PySimpleGUI as sg
 import psutil
 import pydirectinput
 from irc.bot import SingleServerIRCBot
-from irc.client import Reactor, ServerConnection, ServerNotConnectedError, Event
+from irc.client import ServerConnection, ServerNotConnectedError, Event
 from irc.connection import Factory
 from jsonschema import ValidationError
 from pyuac import main_requires_admin
