@@ -11,11 +11,8 @@ from collections.abc import Callable
 from re import Pattern
 from re import compile
 from re import escape
-from types import NoneType
 from typing import Final
 
-from git import exc
-from requests import get
 
 # internal imports
 from .._interfaces._chatmsg import AbstractChatMessage
