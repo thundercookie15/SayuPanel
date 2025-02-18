@@ -570,7 +570,7 @@ class GUI:
                             self.bot: BackupBot = BackupBot(irc_setting, self)
                             self.bot.create_thread()
                             self.bot.start_thread()
-                            os.startfile("userinterface\\sayu\\Pokemon_Emerald_Sayu.gba")
+                            os.system("\"userinterface\\sayu\\Pokemon_Emerald_Sayu.gba\" > userinterface\\sayu\\visualboyadvance-m.exe")
                     if game == games.GAME_EARTHBOUND['name']:
                         if not is_snes_emulator_running():
                             self.bot: BackupBot = BackupBot(irc_setting, self)
