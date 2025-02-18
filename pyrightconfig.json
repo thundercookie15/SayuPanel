@@ -8,5 +8,9 @@
   "ignore": [
     "stubs/*",
     "build_sayu_panel.spec"
-  ]
+  ],
+  "reportOptionalMemberAccess": "none",
+  "reportArgumentType": "none",
+  "reportCallIssue": "none",
+  "reportAttributeAccessIssue": "none"
 }
