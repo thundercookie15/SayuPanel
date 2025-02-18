@@ -55,7 +55,7 @@ pygame==2.6.1
 Pygments==2.15.0
 pyinstaller==6.9.0
 pyinstaller-hooks-contrib==2024.7
-pysimplegui==5.0.6
+pysimplegui==5.0.8
 psutil==7.0.0
 pypiwin32==223
 pyqt6==6.7.1
