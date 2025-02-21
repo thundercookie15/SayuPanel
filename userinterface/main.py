@@ -15,7 +15,7 @@ import PySimpleGUI as sg
 import psutil
 import pydirectinput
 from irc.bot import SingleServerIRCBot
-from irc.client import Reactor, ServerConnection, ServerNotConnectedError, Event
+from irc.client import ServerConnection, ServerNotConnectedError, Event
 from irc.connection import Factory
 from jsonschema import ValidationError
 from pyuac import main_requires_admin
@@ -564,7 +564,7 @@ class GUI:
                             self.bot: BackupBot = BackupBot(irc_setting, self)
                             self.bot.create_thread()
                             self.bot.start_thread()
-                            os.system("\"userinterface\\pokemon\\Pokemon_Emerald.gba\" > userinterface\\sayu\\visualboyadvance-m.exe")
+                            os.startfile("\"userinterface\\pokemon\\Pokemon_Emerald.gba\" > userinterface\\sayu\\visualboyadvance-m.exe")
                     if game == games.GAME_POKEMON_SAYU['name']:
                         if not is_gba_emulator_running():
                             self.bot: BackupBot = BackupBot(irc_setting, self)

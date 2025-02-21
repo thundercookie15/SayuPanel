@@ -13,6 +13,7 @@ from re import compile
 from re import escape
 from typing import Final
 
+
 # internal imports
 from .._interfaces._chatmsg import AbstractChatMessage
 from .._interfaces._userlist import AbstractUserList
@@ -332,7 +333,12 @@ class UserList(AbstractUserList):
         '''
         Check if any subgroups flag positive for `msg`
         '''
-        return any(is_in_group(msg) for is_in_group in self.subgroup_checks)
+        try:
+            return any(is_in_group(msg) for is_in_group in self.subgroup_checks)
+        except TypeError as e:
+            print('Error somewhere while checking for message tags')
+            print(e)
+            return False
 
     # ----------------------------------------------------------------------------
 
